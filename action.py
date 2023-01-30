@@ -13,10 +13,11 @@ class App:
         pyxel.run(self.update, self.draw);
 
     def update(self):
-        if self.player.currentWindow + 1 >= self.windowNum:
-            self.window.append(Window(-1 * 16 * 3 * 8))
-            self.windowNum += 1;
         self.player.update()
+        if self.player.currentWindow > self.windowNum:
+            self.window.append(Window(-16 * 3 * 8))
+            self.windowNum += 1;
+        
         if self.player.windowChange == True:
             if self.player.currentWindow != 0 : self.window[self.player.currentWindow - 1].update()
             self.window[self.player.currentWindow].update()
@@ -32,7 +33,7 @@ class App:
             else:
                 pyxel.line(0, i * 16-1, 224, i * 16-1, 11);
         # if self.window[self.currentWindow].y >= -1 * 16 * 3 * 8 and self.window[self.player.currentWindow].y <= 16 * 3 * 8:
-        # if self.player.currentWindow != 0: self.window[self.player.currentWindow - 1].draw()
+        if self.player.currentWindow != 0: self.window[self.player.currentWindow - 1].draw()
         self.window[self.player.currentWindow].draw()
         # if self.player.currentWindow + 1 <= self.windowNum:self.window[self.player.currentWindow + 1].draw()
         self.player.draw()
