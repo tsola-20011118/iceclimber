@@ -1,8 +1,5 @@
 import pyxel
 
-
-aaaaa
-
 class App:
     def __init__(self):
         pyxel.init(224, 16 * 3 * 8, fps=30);#224/12=18
