@@ -13,6 +13,7 @@ class App:
         self.score = 0
         self.scoreFlag = False
         self.enemy1Flag = False
+        pyxel.play(1,10, loop=True)
         pyxel.run(self.update, self.draw);
 
     def update(self):
