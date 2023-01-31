@@ -6,37 +6,92 @@ class App:
         pyxel.load("action.pyxres")
         self.window = [];
         self.window.append(Window(0));
-        # self.window.append(Window(-16 * 3 * 8))
-        self.windowNum = 0;
+        self.window.append(Window(-16 * 3 * 8))
+        self.windowNum = 1;
         self.player = Player();
+        self.gameMode = 0
+        self.score = 0
+        self.scoreFlag = False
+        self.enemy1Flag = False
         pyxel.run(self.update, self.draw);
 
     def update(self):
-        if self.player.currentWindow != 0 :
-            self.player.update(self.window[self.player.currentWindow], self.window[self.player.currentWindow - 1])
-        else:
-            self.player.update(self.window[self.player.currentWindow], None)
-        if self.player.currentWindow + 1 > self.windowNum:
-            self.window.append(Window(-16 * 3 * 8))
-            self.windowNum += 1;
-        # if self.player.windowChangeUP == True:
-        #     if self.player.currentWindow != 0 : self.window[self.player.currentWindow - 1].update(self.player.windowChangeUP, self.player.windowChangeDOWN)
-        # if self.player.windowChangeDOWN == True:
-        #     if self.player.currentWindow + 1 <= self.windowNum: self.window[self.player.currentWindow + 1].update(self.player.windowChangeUP, self.player.windowChangeDOWN)
+        if self.gameMode == 0:
+            if pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
+                self.gameMode = 1
+        elif self.gameMode == 1:
+            if self.player.currentWindow != 0 :
+                self.player.update(self.window[self.player.currentWindow], self.window[self.player.currentWindow - 1])
+            else:
+                self.player.update(self.window[self.player.currentWindow], None)
+            if self.player.currentWindow + 1 > self.windowNum:
+                self.window.append(Window(-16 * 3 * 8))
+                self.windowNum += 1;
+            if self.player.windowChangeUP == True:
+                if self.player.currentWindow != 0:
+                    self.window[self.player.currentWindow - 1].update(self.player.windowChangeUP, self.player.windowChangeDOWN)
+            if self.player.windowChangeDOWN == True:
+                if self.player.currentWindow + 1 <= self.windowNum: self.window[self.player.currentWindow + 1].update(self.player.windowChangeUP, self.player.windowChangeDOWN)
+            self.scoreChange()
+            self.enemyBump(self.window[self.player.currentWindow].enemy, 2)
+            self.enemyBump(self.window[self.player.currentWindow].moveenemy, 1)
+            self.enemyBump(self.window[self.player.currentWindow].moveenemy2, 1)
+            if self.score <= 0:
+                self.score = 0
+                self.gameMode == 2
         self.window[self.player.currentWindow].update(self.player.windowChangeUP, self.player.windowChangeDOWN)
 
     def draw(self):
-        pyxel.cls(0);
-        for i in range(8 * 3):
-            if i % 3 == 0:
-                pyxel.line(0, i * 16-1, 224, i * 16-1, 0);
-            else:
-                pyxel.line(0, i * 16-1, 224, i * 16-1, 11);
+        pyxel.cls(1);
+        # for i in range(8 * 3):
+        #     if i % 3 == 0:
+        #         pyxel.line(0, i * 16-1, 224, i * 16-1, 0);
+        #     else:
+        #         pyxel.line(0, i * 16-1, 224, i * 16-1, 11);
         if self.player.currentWindow != 0: self.window[self.player.currentWindow - 1].draw()
         self.window[self.player.currentWindow].draw()
-        # self.window[self.player.currentWindow + 1].draw()
-        self.player.draw()
+        self.window[self.player.currentWindow + 1].draw()
+        if self.gameMode == 0:
+            pyxel.rect(10, 150, 224 - 20, 80, 0)
+            pyxel.rect(10, 250, 224 - 20, 40, 0)
+            pyxel.text(90, 170, "ICE CRIMER", 7)
+            pyxel.text(40, 200, "Collect coins while avoiding enemies!!", 7)
+            pyxel.text(70, 270, "press space to start!!", 7)
+        elif self.gameMode == 1:
+            self.player.draw()
+            pyxel.text(224 - len(str(self.score)) * 4, 4, str(self.score), 8)
+        # pyxel.text(0, 0, str(self.window[self.player.currentWindow].jem.jemFlag[int(self.player.floor)]), 7)
+        # pyxel.text(0, 10, str(self.scoreFlag), 7)
+        pyxel.text(0, 20, str(self.enemy1Flag), 7)
+        pyxel.text(0, 100, str(self.window[self.player.currentWindow].moveenemy.sum[self.player.floor].drawFlag), 8)
+        pyxel.text(0, 110, str(self.window[self.player.currentWindow].moveenemy.sum[self.player.floor].aliveFlag), 8)
 
+    def scoreChange(self):
+        if self.scoreFlag == True:
+            self.score += 100
+            self.scoreFlag = False
+        if self.window[self.player.currentWindow].jem.jemFlag[self.player.floor] == False:
+            if self.player.x + 12 > self.window[self.player.currentWindow].jem.jem[self.player.floor] * 16 and self.player.x < self.window[self.player.currentWindow].jem.jem[self.player.floor] * 16 + 16:
+                self.scoreFlag = True
+                self.window[self.player.currentWindow].jem.jemFlag[self.player.floor] = True
+            if self.player.moveOutL == True:
+                if 224 + self.player.x + 12 > self.window[self.player.currentWindow].jem.jem[self.player.floor] * 16 and 224 + self.player.x < self.window[self.player.currentWindow].jem.jem[self.player.floor] * 16 + 16:
+                    self.scoreFlag = True
+                    self.window[self.player.currentWindow].jem.jemFlag[self.player.floor] = True
+            if self.player.moveOutR == True:
+                if self.player.x + 12 - 224 > self.window[self.player.currentWindow].jem.jem[self.player.floor] * 16 and self.player.x - 224 < self.window[self.player.currentWindow].jem.jem[self.player.floor] * 16 + 16:
+                    self.scoreFlag = True
+                    self.window[self.player.currentWindow].jem.jemFlag[self.player.floor] = True
+
+    def enemyBump(self, currentenemy, num):
+        enemy = currentenemy.sum[self.player.floor]
+        if enemy.aliveFlag == False and enemy.x - 12 < self.player.x and self.player.x < enemy.x + 16:
+            self.enemy1Flag = True
+        if self.enemy1Flag == True :
+            self.player.life -= num
+            self.enemy1Flag = False
+            enemy.drawFlag = False
+            enemy.aliveFlag = True
 
 
 
@@ -44,7 +99,6 @@ class Player:
     def __init__(self):
         self.x = 224 / 2 - 6  # 102
         self.y = 16 * 3 * 8 - 32
-        self.y = 16
         # playerが右端にはみ出ている時のflag
         self.moveOutR = False
         # playerが左端にはみ出ている時のflag
@@ -72,6 +126,7 @@ class Player:
         self.ladderUP = False
         self.ladderDOWN = False
         self.tempY = 0
+        self.life = 16
 
     def update(self, window, downwindow):
         self.windowMove()
@@ -93,11 +148,11 @@ class Player:
     def draw(self):
         pyxel.blt(self.x, self.y, 0, self.imageNumX, self.imageNumY, 16, 16, 0)
         if self.moveOutL == True:
-            pyxel.blt(224 + self.x, self.y, 0, self.imageNumX,
-                      self.imageNumY, 16, 16, 0)
+            pyxel.blt(224 + self.x, self.y, 0, self.imageNumX,self.imageNumY, 16, 16, 0)
         if self.moveOutR == True:
-            pyxel.blt(self.x - 224, self.y, 0, self.imageNumX,
-                      self.imageNumY, 16, 16, 0)
+            pyxel.blt(self.x - 224, self.y, 0, self.imageNumX,self.imageNumY, 16, 16, 0)
+        if self.life >= 0:
+            pyxel.blt(0, 0, 0, 0, 32,  8 * self.life, 16, 0)
 
     def ladderCheck(self, window, downwindow):
         if self.ladderDOWN == False or self.ladderUP == False:
@@ -113,7 +168,6 @@ class Player:
             else:
                 self.ladderDOWN = False
 
-    # TODO self.headを0に戻す処理
     def moveUD(self):
         if self.head == 0 and self.ladderUP == True:
             if pyxel.btnp(pyxel.KEY_UP, 1, 1):
@@ -144,8 +198,6 @@ class Player:
             if pyxel.btnp(pyxel.KEY_LEFT, 1, 1):
                 self.x -= 4
                 self.face = -1
-
-
 
     def action(self):
         if pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
@@ -227,10 +279,8 @@ class Window:
         self.back = self.Background(self.x, self.y)
         self.jem = self.Jem(self.x, self.y, self.back.ladder)
         self.enemy = self.Enemy(self.x, self.y, self.back.ladder, self.jem.jem)
-        self.moveenemy = self.MovingEnemy(
-            self.x, self.y, self.back.ladder, self.jem.jem, self.enemy.place)
-        self.moveenemy2 = self.MovingEnemy(
-            self.x, self.y, self.back.ladder, self.jem.jem, self.enemy.place)
+        self.moveenemy = self.MovingEnemy(self.x, self.y, self.back.ladder, self.jem.jem, self.enemy)
+        self.moveenemy2 = self.MovingEnemy(self.x, self.y, self.back.ladder, self.jem.jem, self.enemy)
 
     def update(self, up, down):
         if up == True:
@@ -280,6 +330,7 @@ class Window:
                 if self.jem[p] == ladder[p]:
                     self.jem[p] = pyxel.rndi(0, 1)
                     self.jem[p] *= 13
+            self.jemFlag = [False, False, False, False, False, False, False, False]
 
         def update(self, y):
             self.y = y
@@ -288,20 +339,19 @@ class Window:
             for y in range(24):
                 if y % 3 == 1:
                     for x in range(14):
-                        if x == self.jem[int(y / 3)]:
-                            pyxel.blt(self.x + x * 16, self.y +
-                                      y * 16, 1, 0, 16, 16, 16, 0)
+                        if x == self.jem[int(y / 3)] and self.jemFlag[int(y / 3)] == False:
+                            pyxel.blt(self.x + x * 16, self.y +  y * 16, 1, 0, 16, 16, 16, 0)
 
     class Enemy:
         def __init__(self, x, y, ladder, jem):
             self.x = x
             self.y = y
-            self.place = [pyxel.rndi(1, 13), pyxel.rndi(1, 13), pyxel.rndi(1, 13), pyxel.rndi(
-                1, 13), pyxel.rndi(1, 13), pyxel.rndi(1, 13), pyxel.rndi(1, 13), pyxel.rndi(1, 13)]
+            self.sum = [self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(),]
             for p in range(8):
-                if self.place[p] == ladder[p] or self.place[p] == jem[p]:
-                    while self.place[p] == ladder[p] or self.place[p] == jem[p]:
-                        self.place[p] = pyxel.rndi(1, 13)
+                if self.sum[p].x == ladder[p] or self.sum[p].x == jem[p]:
+                    while self.sum[p].x == ladder[p] or self.sum[p].x == jem[p]:
+                        self.sum[p].x = pyxel.rndi(1, 13)
+                self.sum[p].x *= 16
 
         def update(self, y):
             self.y = y
@@ -310,18 +360,26 @@ class Window:
             for y in range(24):
                 if y % 3 == 1:
                     for x in range(14):
-                        if x == self.place[int(y / 3)]:
-                            pyxel.blt(self.x + x * 16, self.y +
-                                      y * 16, 2, 0, 0, 16, 16, 0)
+                        if x == self.sum[int(y / 3)].x / 16:
+                            if self.sum[int(y / 3)].drawFlag == True:
+                                pyxel.blt(self.x + self.sum[int(y / 3)].x , self.y + y * 16, 2, 0, 0, 16, 16, 0)
+
+        class Enemy:
+            def __init__(self):
+                self.enemyFlag = False
+                self.x = pyxel.rndi(1, 13)
+                self.flag = pyxel.rndi(1, 2)
+                self.aliveFlag = False
+                self.drawFlag = True
 
     class MovingEnemy:
         def __init__(self, x, y, ladder, jem, enemy):
             self.x = x
             self.y = y
-            self.sum = [self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(),]
+            self.sum = [self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy()]
             for p in range(8):
-                if self.sum[p].x == ladder[p] or self.sum[p].x == jem[p] or self.sum[p].x == enemy[p]:
-                    while self.sum[p].x == ladder[p] or self.sum[p].x == jem[p] or self.sum[p].x == enemy[p]:
+                if self.sum[p].x == ladder[p] or self.sum[p].x == jem[p] or self.sum[p].x == enemy.sum[p].x:
+                    while self.sum[p].x == ladder[p] or self.sum[p].x == jem[p] or self.sum[p].x == enemy.sum[p].x:
                         self.sum[p].x = pyxel.rndi(1, 13)
                     self.sum[p].x *= 16
             self.speed = 1.5
@@ -344,31 +402,38 @@ class Window:
         def draw(self):
             for y in range(24):
                 if y % 3 == 1:
-                    if self.sum[int(y / 3)].flag == 1:
-                        pyxel.blt(self.x + self.sum[int(y / 3)].x, self.y + y * 16 - 8, 2, 16, 0, 16, 16, 0)
-                        if self.sum[int(y / 3)].moveOutL == True:
-                            pyxel.blt(224 + self.sum[int(y / 3)].x, self.y + y * 16 - 8, 2, 16, 0, 16, 16, 0)
-                        if self.sum[int(y / 3)].moveOutR == True:
-                            pyxel.blt(self.sum[int(y / 3)].x - 224, self.y + y * 16 - 8, 2, 16, 0, 16, 16, 0)
-                    else:
-                        pyxel.blt(self.x + self.sum[int(y / 3)].x, self.y + y * 16 - 8, 2, 32, 0, 16, 16, 0)
-                        if self.sum[int(y / 3)].moveOutL == True:
-                            pyxel.blt(224 + self.sum[int(y / 3)].x, self.y + y * 16 - 8, 2, 32, 0, 16, 16, 0)
-                        if self.sum[int(y / 3)].moveOutR == True:
-                            pyxel.blt(self.sum[int(y / 3)].x - 224, self.y + y * 16 - 8, 2, 32, 0, 16, 16, 0)
-            pyxel.text(0, 30, str(self.sum[0].flag), 8)
-            pyxel.text(0, 40, str(self.sum[0].moveOutL), 8)
+                    if self.sum[int(y / 3)].drawFlag == True :
+                        if self.sum[int(y / 3)].flag == 1:
+                            pyxel.blt(
+                                self.x + self.sum[int(y / 3)].x, self.y + y * 16 - 8, 2, 16, 0, 16, 16, 0)
+                            if self.sum[int(y / 3)].moveOutL == True:
+                                pyxel.blt(
+                                    224 + self.sum[int(y / 3)].x, self.y + y * 16 - 8, 2, 16, 0, 16, 16, 0)
+                            if self.sum[int(y / 3)].moveOutR == True:
+                                pyxel.blt(
+                                    self.sum[int(y / 3)].x - 224, self.y + y * 16 - 8, 2, 16, 0, 16, 16, 0)
+                        else:
+                            pyxel.blt(
+                                self.x + self.sum[int(y / 3)].x, self.y + y * 16 - 8, 2, 32, 0, 16, 16, 0)
+                            if self.sum[int(y / 3)].moveOutL == True:
+                                pyxel.blt(
+                                    224 + self.sum[int(y / 3)].x, self.y + y * 16 - 8, 2, 32, 0, 16, 16, 0)
+                            if self.sum[int(y / 3)].moveOutR == True:
+                                pyxel.blt(
+                                    self.sum[int(y / 3)].x - 224, self.y + y * 16 - 8, 2, 32, 0, 16, 16, 0)
 
-        
         class Enemy:
             def __init__(self):
-                self.x = pyxel.rndi(1, 13) * 16;
-                self.flag = pyxel.rndi(1, 2);
+                self.x = pyxel.rndi(1, 13) * 16
+                self.flag = pyxel.rndi(1, 2)
+                self.aliveFlag = False
                 # playerが右端にはみ出ている時のflag
                 self.moveOutR = False
                 # playerが左端にはみ出ている時のflag
                 self.moveOutL = False
-                self.time = pyxel.rndi(1,60)
+                self.time = pyxel.rndi(1, 60)
+                self.drawFlag = True
+
 
 def moveOut(chara, size):
     if chara.x < 0 and chara.x + size > 0:
