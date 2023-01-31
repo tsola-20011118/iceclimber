@@ -78,38 +78,22 @@ class App:
             pyxel.text(95, 170, "ICE CRIMER", 7)
             pyxel.text(60, 200, "GAME OVER : YORU SCORE is "+ str(self.score) , 7)
             pyxel.text(60, 270, "press space to REstart!!", 7)
-        pyxel.text(0, 0, str(self.window[self.player.currentWindow].jem.jemFlag[0]), 7)
-        pyxel.text(0, 10, str(self.player.windowChangeUP) +
-                   str(self.player.windowChangeDOWN), 7)
-        pyxel.text(0, 20, str(self.player.actionFlag), 7)
-        pyxel.text(0, 30, str(pyxel.btnp(pyxel.KEY_SPACE, 1, 1)), 0)
-        pyxel.text(0, 40, str(self.player.floor), 0)
+        # pyxel.text(0, 0, str(self.window[self.player.currentWindow].jem.jemFlag[0]), 7)
+        # pyxel.text(0, 10, str(self.player.windowChangeUP) +
+        #            str(self.player.windowChangeDOWN), 7)
+        # pyxel.text(0, 20, str(self.player.actionFlag), 7)
+        # pyxel.text(0, 30, str(pyxel.btnp(pyxel.KEY_SPACE, 1, 1)), 0)
+        # pyxel.text(0, 40, str(self.player.floor), 0)
         # pyxel.text(0, 50, str(self.player.ladderUP), 0)
         # pyxel.text(0, 100, str(self.window[self.player.currentWindow].ladder[4]), 8)
         # pyxel.text(0, 110, str(self.window[self.player.currentWindow].enemy[4].x), 8)
-
-    def scoreChange(self):
-        if self.scoreFlag == True:
-            self.score += 100
-            self.scoreFlag = False
-        if self.window[self.player.currentWindow].jem.jemFlag[self.player.floor] == False:
-            if self.player.x + 12 > self.window[self.player.currentWindow].jem.jem[self.player.floor] * 16 and self.player.x < self.window[self.player.currentWindow].jem.jem[self.player.floor] * 16 + 16:
-                self.scoreFlag = True
-                self.window[self.player.currentWindow].jem.jemFlag[self.player.floor] = True
-            if self.player.moveOutL == True:
-                if 224 + self.player.x + 12 > self.window[self.player.currentWindow].jem.jem[self.player.floor] * 16 and 224 + self.player.x < self.window[self.player.currentWindow].jem.jem[self.player.floor] * 16 + 16:
-                    self.scoreFlag = True
-                    self.window[self.player.currentWindow].jem.jemFlag[self.player.floor] = True
-            if self.player.moveOutR == True:
-                if self.player.x + 12 - 224 > self.window[self.player.currentWindow].jem.jem[self.player.floor] * 16 and self.player.x - 224 < self.window[self.player.currentWindow].jem.jem[self.player.floor] * 16 + 16:
-                    self.scoreFlag = True
-                    self.window[self.player.currentWindow].jem.jemFlag[self.player.floor] = True
 
     def Bump(self, currentenemy, num):
         enemy = currentenemy.sum[self.player.floor]
         if self.player.y == self.player.floor * 16 * 3 + 16:
             if enemy.aliveFlag == False and enemy.x - 6 < self.player.x and self.player.x < enemy.x + 16 - 6 and self.player.actionFlag == False:
                 self.enemy1Flag = True
+                pyxel.play(0, 4, loop=False)
             if self.enemy1Flag == True :
                 self.player.life -= num
                 self.enemy1Flag = False
@@ -122,6 +106,7 @@ class App:
             if enemy.aliveFlag == False and enemy.x - 18 < self.player.x and self.player.x < enemy.x + 16 + 18 and self.player.actionFlag == True:
                 if (enemy.x > self.player.x and self.player.face == 1) or (enemy.x + 16 < self.player.x and self.player.face == -1):
                     self.enemy1Flag = True
+                    
             if self.enemy1Flag == True:
                 enemy.life -= 1
                 self.enemy1Flag = False
@@ -141,6 +126,7 @@ class App:
         if currentjem.life[self.player.floor] == 0 and currentjem.jemFlag[self.player.floor] == False:
             currentjem.jemFlag[self.player.floor] = True
             self.score += 100
+            pyxel.play(0, 3, loop=False)
 
 
 class Player:
@@ -183,6 +169,7 @@ class Player:
         if self.windowChangeUP == False and self.windowChangeDOWN == False:
             self.floor = int(self.y / 16 / 3)
             self.ladderCheck(window, downwindow)
+            # if self.floor != False:
             self.action()
             if self.actionFlag == False:
                 # 上に上がる
@@ -222,6 +209,7 @@ class Player:
                 self.head = -10
                 self.ladderUP = False
                 self.tempY = self.y
+                pyxel.play(0, 0, loop=False)
         if self.head == -10:
             if self.y == self.tempY - 32:
                 self.head = -5
@@ -233,6 +221,7 @@ class Player:
                 self.head = 10
                 self.ladderDOWN = False
                 self.tempY = self.y
+                pyxel.play(0, 1, loop=False)
         if self.head == 10:
             if self.y == self.tempY + 16:
                 self.head = 5
@@ -243,9 +232,11 @@ class Player:
             if pyxel.btnp(pyxel.KEY_UP, 1, 1):
                 self.head = -1
                 self.ladderUP = False
+                pyxel.play(0, 0, loop=False)
             if pyxel.btnp(pyxel.KEY_DOWN, 1, 1):
                 self.head = 1
                 self.ladderDOWN = False
+                pyxel.play(0, 1, loop=False)
         if self.head == -1:
             if self.y == self.tempY - 16:
                 self.head = 0
@@ -269,6 +260,7 @@ class Player:
     def action(self):
         if pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
             self.actionFlag = True
+            pyxel.play(0, 2, loop=False)
         if self.actionFlag == True:
             self.actionTime += 1
             if self.actionTime == 6 * 2 + 4:
