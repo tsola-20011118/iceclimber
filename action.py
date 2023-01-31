@@ -32,13 +32,25 @@ class App:
                     self.window[self.player.currentWindow - 1].update(self.player.windowChangeUP, self.player.windowChangeDOWN)
             if self.player.windowChangeDOWN == True:
                 if self.player.currentWindow + 1 <= self.windowNum: self.window[self.player.currentWindow + 1].update(self.player.windowChangeUP, self.player.windowChangeDOWN)
-            self.scoreChange()
-            self.enemyBump(self.window[self.player.currentWindow].enemy, 2)
-            self.enemyBump(self.window[self.player.currentWindow].moveenemy, 1)
-            self.enemyBump(self.window[self.player.currentWindow].moveenemy2, 1)
-            if self.score <= 0:
+            self.Get(self.window[self.player.currentWindow].jem)
+            self.Bump(self.window[self.player.currentWindow].enemy, 2)
+            self.Attack(self.window[self.player.currentWindow].enemy)
+            self.Bump(self.window[self.player.currentWindow].moveenemy, 1)
+            self.Bump(self.window[self.player.currentWindow].moveenemy2, 1)
+            if self.player.life <= 0:
+                self.gameMode = 2
+        if self.gameMode == 2:
+            if pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
+                self.gameMode = 0
+                self.window = []
+                self.window.append(Window(0))
+                self.window.append(Window(-16 * 3 * 8))
+                self.windowNum = 1
+                self.player = Player()
+                self.gameMode = 0
                 self.score = 0
-                self.gameMode == 2
+                self.scoreFlag = False
+                self.enemy1Flag = False
         self.window[self.player.currentWindow].update(self.player.windowChangeUP, self.player.windowChangeDOWN)
 
     def draw(self):
@@ -60,11 +72,20 @@ class App:
         elif self.gameMode == 1:
             self.player.draw()
             pyxel.text(224 - len(str(self.score)) * 4, 4, str(self.score), 8)
+        elif self.gameMode == 2:
+            pyxel.rect(10, 150, 224 - 20, 80, 0)
+            pyxel.rect(10, 250, 224 - 20, 40, 0)
+            pyxel.text(95, 170, "ICE CRIMER", 7)
+            pyxel.text(60, 200, "GAME OVER : YORU SCORE is "+ str(self.score) , 7)
+            pyxel.text(60, 270, "press space to REstart!!", 7)
         # pyxel.text(0, 0, str(self.window[self.player.currentWindow].jem.jemFlag[int(self.player.floor)]), 7)
-        # pyxel.text(0, 10, str(self.scoreFlag), 7)
-        pyxel.text(0, 20, str(self.enemy1Flag), 7)
-        pyxel.text(0, 100, str(self.window[self.player.currentWindow].moveenemy.sum[self.player.floor].drawFlag), 8)
-        pyxel.text(0, 110, str(self.window[self.player.currentWindow].moveenemy.sum[self.player.floor].aliveFlag), 8)
+        # pyxel.text(0, 10, str(self.gameMode), 7)
+        # pyxel.text(0, 20, str(self.player.life), 7)
+        # pyxel.text(0, 30, str(self.player.y), 0)
+        # pyxel.text(0, 40, str(self.player.head), 0)
+        # pyxel.text(0, 50, str(self.player.ladderUP), 0)
+        # pyxel.text(0, 100, str(self.window[self.player.currentWindow].ladder[4]), 8)
+        # pyxel.text(0, 110, str(self.window[self.player.currentWindow].enemy[4].x), 8)
 
     def scoreChange(self):
         if self.scoreFlag == True:
@@ -83,16 +104,42 @@ class App:
                     self.scoreFlag = True
                     self.window[self.player.currentWindow].jem.jemFlag[self.player.floor] = True
 
-    def enemyBump(self, currentenemy, num):
+    def Bump(self, currentenemy, num):
         enemy = currentenemy.sum[self.player.floor]
-        if enemy.aliveFlag == False and enemy.x - 12 < self.player.x and self.player.x < enemy.x + 16:
-            self.enemy1Flag = True
-        if self.enemy1Flag == True :
-            self.player.life -= num
-            self.enemy1Flag = False
+        if self.player.y == self.player.floor * 16 * 3 + 16:
+            if enemy.aliveFlag == False and enemy.x - 6 < self.player.x and self.player.x < enemy.x + 16 - 6 and self.player.actionFlag == False:
+                self.enemy1Flag = True
+            if self.enemy1Flag == True :
+                self.player.life -= num
+                self.enemy1Flag = False
+                enemy.drawFlag = False
+                enemy.aliveFlag = True
+
+    def Attack(self, currentenemy):
+        enemy = currentenemy.sum[self.player.floor]
+        if self.player.y == self.player.floor * 16 * 3 + 16:
+            if enemy.aliveFlag == False and enemy.x - 18 < self.player.x and self.player.x < enemy.x + 16 + 18 and self.player.actionFlag == True:
+                if (enemy.x > self.player.x and self.player.face == 1) or (enemy.x + 16 < self.player.x and self.player.face == -1):
+                    self.enemy1Flag = True
+            if self.enemy1Flag == True:
+                enemy.life -= 1
+                self.enemy1Flag = False
+        if enemy.life == 0:
             enemy.drawFlag = False
             enemy.aliveFlag = True
 
+    def Get(self, currentjem):
+        jem = currentjem.jem[self.player.floor]
+        if self.player.y == self.player.floor * 16 * 3 + 16:
+            if currentjem.jemFlag[self.player.floor] == False and jem * 16 - 18 < self.player.x and self.player.x < jem * 16 + 16 + 18 and self.player.actionFlag == True:
+                if (jem * 16 + 16 > self.player.x and self.player.face == 1) or (jem * 16  < self.player.x and self.player.face == -1):
+                    self.scoreFlag = True
+            if self.scoreFlag == True:
+                currentjem.life[self.player.floor] -= 1
+                self.scoreFlag = False
+        if currentjem.life[self.player.floor] == 0 and currentjem.jemFlag[self.player.floor] == False:
+            currentjem.jemFlag[self.player.floor] = True
+            self.score += 100
 
 
 class Player:
@@ -106,6 +153,7 @@ class Player:
         # imageのnum
         self.imageNumX = 48
         self.imageNumY = 0
+        self.actionX = 0
         # 攻撃状態か否かのflag;
         self.actionFlag = False
         # 攻撃状態の経過時間
@@ -146,11 +194,11 @@ class Player:
             self.imageChange()
 
     def draw(self):
-        pyxel.blt(self.x, self.y, 0, self.imageNumX, self.imageNumY, 16, 16, 0)
+        pyxel.blt(self.x + self.actionX, self.y, 0, self.imageNumX, self.imageNumY, 16, 16, 0)
         if self.moveOutL == True:
-            pyxel.blt(224 + self.x, self.y, 0, self.imageNumX,self.imageNumY, 16, 16, 0)
+            pyxel.blt(224 + self.x + self.actionX, self.y, 0, self.imageNumX,self.imageNumY, 16, 16, 0)
         if self.moveOutR == True:
-            pyxel.blt(self.x - 224, self.y, 0, self.imageNumX,self.imageNumY, 16, 16, 0)
+            pyxel.blt(self.x - 224 + self.actionX, self.y, 0, self.imageNumX,self.imageNumY, 16, 16, 0)
         if self.life >= 0:
             pyxel.blt(0, 0, 0, 0, 32,  8 * self.life, 16, 0)
 
@@ -171,21 +219,40 @@ class Player:
     def moveUD(self):
         if self.head == 0 and self.ladderUP == True:
             if pyxel.btnp(pyxel.KEY_UP, 1, 1):
-                self.head = -1
+                self.head = -10
                 self.ladderUP = False
                 self.tempY = self.y
-        if self.head == -1:
-            if self.y == self.tempY - 48:
-                self.head = 0
+        if self.head == -10:
+            if self.y == self.tempY - 32:
+                self.head = -5
+                self.tempY = self.y
             else:
                 self.y -= 4
         if self.head == 0 and self.ladderDOWN == True:
             if pyxel.btnp(pyxel.KEY_DOWN, 1, 1):
-                self.head = 1
+                self.head = 10
                 self.ladderDOWN = False
                 self.tempY = self.y
+        if self.head == 10:
+            if self.y == self.tempY + 16:
+                self.head = 5
+                self.tempY = self.y
+            else:
+                self.y += 4
+        if self.head == -5 or self.head == 5:
+            if pyxel.btnp(pyxel.KEY_UP, 1, 1):
+                self.head = -1
+                self.ladderUP = False
+            if pyxel.btnp(pyxel.KEY_DOWN, 1, 1):
+                self.head = 1
+                self.ladderDOWN = False
+        if self.head == -1:
+            if self.y == self.tempY - 16:
+                self.head = 0
+            else:
+                self.y -= 4
         if self.head == 1:
-            if self.y == self.tempY + 48:
+            if self.y == self.tempY + 32:
                 self.head = 0
             else:
                 self.y += 4
@@ -204,7 +271,7 @@ class Player:
             self.actionFlag = True
         if self.actionFlag == True:
             self.actionTime += 1
-            if self.actionTime == 6 * 4 + 4:
+            if self.actionTime == 6 * 2 + 4:
                 self.actionFlag = False
                 self.actionTime = 0
 
@@ -246,28 +313,35 @@ class Player:
 
     def imageChange(self):
         if self.head != 0:
+            self.actionX = 0
             self.imageNumX = 48
             self.imageNumY = 16
         else:
             if self.face == 1:
+                self.actionX = 0
                 self.imageNumX = 32
                 self.imageNumY = 0
             if self.face == -1:
+                self.actionX = 0
                 self.imageNumX = 32
                 self.imageNumY = 16
             if self.actionFlag == True:
                 if self.face == 1:
                     if self.actionTime % 6 <= 2:
+                        self.actionX = 0
                         self.imageNumX = 0
                         self.imageNumY = 0
                     else:
+                        self.actionX = 0
                         self.imageNumX = 16
                         self.imageNumY = 0
                 if self.face == -1:
                     if self.actionTime % 6 <= 2:
+                        self.actionX = -4;
                         self.imageNumX = 0
                         self.imageNumY = 16
                     else:
+                        self.actionX = -4
                         self.imageNumX = 16
                         self.imageNumY = 16
 
@@ -279,8 +353,8 @@ class Window:
         self.back = self.Background(self.x, self.y)
         self.jem = self.Jem(self.x, self.y, self.back.ladder)
         self.enemy = self.Enemy(self.x, self.y, self.back.ladder, self.jem.jem)
-        self.moveenemy = self.MovingEnemy(self.x, self.y, self.back.ladder, self.jem.jem, self.enemy)
-        self.moveenemy2 = self.MovingEnemy(self.x, self.y, self.back.ladder, self.jem.jem, self.enemy)
+        self.moveenemy = self.MovingEnemy(self.x, self.y, self.back.ladder, self.jem.jem, self.enemy, 1.5)
+        self.moveenemy2 = self.MovingEnemy(self.x, self.y, self.back.ladder, self.jem.jem, self.enemy , 2)
 
     def update(self, up, down):
         if up == True:
@@ -315,10 +389,8 @@ class Window:
                 if y % 3 == 2:
                     for x in range(14):
                         if x == self.ladder[int((y - 2) / 3)]:
-                            pyxel.blt(self.x + x * 16, self.y + y *
-                                      16 - 56, 1, 48, 0, 24, 56, 8)
-                        pyxel.blt(self.x + x * 16, self.y +
-                                  y * 16, 1, 0, 0, 16, 16, 0)
+                            pyxel.blt(self.x + x * 16, self.y + y *16 - 56, 1, 48, 0, 24, 56, 8)
+                        pyxel.blt(self.x + x * 16, self.y +y * 16, 1, 16, 0, 16, 16, 0)
 
     class Jem:
         def __init__(self, x, y, ladder):
@@ -331,6 +403,7 @@ class Window:
                     self.jem[p] = pyxel.rndi(0, 1)
                     self.jem[p] *= 13
             self.jemFlag = [False, False, False, False, False, False, False, False]
+            self.life = [6 * 4 + 3, 6 * 4 + 3, 6 * 4 + 3, 6 * 4 + 3, 6 * 4 + 3, 6 * 4 + 3, 6 * 4 + 3, 6 * 4 + 3]
 
         def update(self, y):
             self.y = y
@@ -340,7 +413,10 @@ class Window:
                 if y % 3 == 1:
                     for x in range(14):
                         if x == self.jem[int(y / 3)] and self.jemFlag[int(y / 3)] == False:
-                            pyxel.blt(self.x + x * 16, self.y +  y * 16, 1, 0, 16, 16, 16, 0)
+                            if self.life[int(y / 3)] >= 6 * 2 + 3:
+                                pyxel.blt(self.x + x * 16, self.y +  y * 16, 1, 16, 16, 16, 16, 0)
+                            else:
+                                pyxel.blt(self.x + x * 16, self.y +  y * 16, 1, 0, 16, 16, 16, 0)
 
     class Enemy:
         def __init__(self, x, y, ladder, jem):
@@ -348,8 +424,8 @@ class Window:
             self.y = y
             self.sum = [self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(),]
             for p in range(8):
-                if self.sum[p].x == ladder[p] or self.sum[p].x == jem[p]:
-                    while self.sum[p].x == ladder[p] or self.sum[p].x == jem[p]:
+                if self.sum[p].x == ladder[p] or (p != 7 and self.sum[p].x == ladder[p + 1]) or (p != 0 and (self.sum[p].x == ladder[p - 1] + 1 or self.sum[p].x == ladder[p - 1] - 1)) or self.sum[p].x == jem[p]:
+                    while self.sum[p].x == ladder[p] or (p != 7 and self.sum[p].x == ladder[p + 1]) or (p != 0 and (self.sum[p].x == ladder[p - 1] + 1 or self.sum[p].x == ladder[p - 1] - 1)) or self.sum[p].x == jem[p]:
                         self.sum[p].x = pyxel.rndi(1, 13)
                 self.sum[p].x *= 16
 
@@ -362,7 +438,10 @@ class Window:
                     for x in range(14):
                         if x == self.sum[int(y / 3)].x / 16:
                             if self.sum[int(y / 3)].drawFlag == True:
-                                pyxel.blt(self.x + self.sum[int(y / 3)].x , self.y + y * 16, 2, 0, 0, 16, 16, 0)
+                                if self.sum[int(y / 3)].life >= 6 * 2 + 3 :
+                                    pyxel.blt(self.x + self.sum[int(y / 3)].x , self.y + y * 16, 2, 0, 0, 16, 16, 0)
+                                else:
+                                    pyxel.blt(self.x + self.sum[int(y / 3)].x , self.y + y * 16, 2, 0, 16, 16, 16, 0)
 
         class Enemy:
             def __init__(self):
@@ -371,9 +450,10 @@ class Window:
                 self.flag = pyxel.rndi(1, 2)
                 self.aliveFlag = False
                 self.drawFlag = True
+                self.life = 6 * 4 + 3
 
     class MovingEnemy:
-        def __init__(self, x, y, ladder, jem, enemy):
+        def __init__(self, x, y, ladder, jem, enemy, speed):
             self.x = x
             self.y = y
             self.sum = [self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy(), self.Enemy()]
@@ -382,7 +462,7 @@ class Window:
                     while self.sum[p].x == ladder[p] or self.sum[p].x == jem[p] or self.sum[p].x == enemy.sum[p].x:
                         self.sum[p].x = pyxel.rndi(1, 13)
                     self.sum[p].x *= 16
-            self.speed = 1.5
+            self.speed = speed
 
         def update(self, y, ladder):
             self.y = y
@@ -433,6 +513,7 @@ class Window:
                 self.moveOutL = False
                 self.time = pyxel.rndi(1, 60)
                 self.drawFlag = True
+                self.life = 0
 
 
 def moveOut(chara, size):
