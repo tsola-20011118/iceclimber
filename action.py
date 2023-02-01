@@ -80,8 +80,9 @@ class App:
         #            str(self.player.windowChangeDOWN), 7)
         # pyxel.text(0, 20, str(self.player.actionFlag), 7)
         # pyxel.text(0, 30, str(pyxel.btnp(pyxel.KEY_SPACE, 1, 1)), 0)
-        # pyxel.text(0, 40, str(self.player.floor), 0)
-        # pyxel.text(0, 50, str(self.player.ladderUP), 0)
+        pyxel.text(0, 40, str(self.player.head), 0)
+        pyxel.text(0, 50, str(self.player.ladderUP), 0)
+        pyxel.text(0, 60, str(self.player.ladderDOWN), 0)
         # pyxel.text(0, 100, str(self.window[self.player.currentWindow].ladder[4]), 8)
         # pyxel.text(0, 110, str(self.window[self.player.currentWindow].enemy[4].x), 8)
 
@@ -187,7 +188,7 @@ class Player:
             pyxel.blt(0, 0, 0, 0, 32,  8 * self.life, 16, 0)
 
     def ladderCheck(self, window, downwindow):
-        if self.ladderDOWN == False or self.ladderUP == False:
+        # if self.ladderDOWN == False or self.ladderUP == False:
             # 上に上がる判定
             if window.back.ladder[int(self.floor)] * 16 - 6  < self.x and window.back.ladder[int(self.floor)] * 16 + 24 - 6 > self.x:
                 self.ladderUP = True
