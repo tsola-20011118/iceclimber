@@ -75,16 +75,6 @@ class App:
             pyxel.text(95, 170, "ICE CRIMER", 7)
             pyxel.text(60, 200, "GAME OVER : YORU SCORE is "+ str(self.score) , 7)
             pyxel.text(60, 270, "press space to REstart!!", 7)
-        # pyxel.text(0, 0, str(self.window[self.player.currentWindow].jem.jemFlag[0]), 7)
-        # pyxel.text(0, 10, str(self.player.windowChangeUP) +
-        #            str(self.player.windowChangeDOWN), 7)
-        # pyxel.text(0, 20, str(self.player.actionFlag), 7)
-        # pyxel.text(0, 30, str(pyxel.btnp(pyxel.KEY_SPACE, 1, 1)), 0)
-        pyxel.text(0, 40, str(self.player.head), 0)
-        pyxel.text(0, 50, str(self.player.ladderUP), 0)
-        pyxel.text(0, 60, str(self.player.ladderDOWN), 0)
-        # pyxel.text(0, 100, str(self.window[self.player.currentWindow].ladder[4]), 8)
-        # pyxel.text(0, 110, str(self.window[self.player.currentWindow].enemy[4].x), 8)
 
     def Bump(self, currentenemy, num):
         enemy = currentenemy.sum[self.player.floor]
