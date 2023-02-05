@@ -60,21 +60,21 @@ class App:
         if self.player.currentWindow != 0: self.window[self.player.currentWindow - 1].draw()
         self.window[self.player.currentWindow].draw()
         self.window[self.player.currentWindow + 1].draw()
-        if self.gameMode == 0:
-            pyxel.rect(10, 150, 224 - 20, 80, 0)
-            pyxel.rect(10, 250, 224 - 20, 40, 0)
-            pyxel.text(90, 170, "ICE CRIMER", 7)
-            pyxel.text(40, 200, "Collect coins while avoiding enemies!!", 7)
-            pyxel.text(70, 270, "press space to start!!", 7)
-        elif self.gameMode == 1:
-            self.player.draw()
-            pyxel.text(224 - len(str(self.score)) * 4, 4, str(self.score), 8)
-        elif self.gameMode == 2:
-            pyxel.rect(10, 150, 224 - 20, 80, 0)
-            pyxel.rect(10, 250, 224 - 20, 40, 0)
-            pyxel.text(95, 170, "ICE CRIMER", 7)
-            pyxel.text(60, 200, "GAME OVER : YORU SCORE is "+ str(self.score) , 7)
-            pyxel.text(60, 270, "press space to REstart!!", 7)
+        # if self.gameMode == 0:
+        #     pyxel.rect(10, 150, 224 - 20, 80, 0)
+        #     pyxel.rect(10, 250, 224 - 20, 40, 0)
+        #     pyxel.text(90, 170, "ICE CRIMER", 7)
+        #     pyxel.text(40, 200, "Collect coins while avoiding enemies!!", 7)
+        #     pyxel.text(70, 270, "press space to start!!", 7)
+        # elif self.gameMode == 1:
+        #     self.player.draw()
+        #     pyxel.text(224 - len(str(self.score)) * 4, 4, str(self.score), 8)
+        # elif self.gameMode == 2:
+        #     pyxel.rect(10, 150, 224 - 20, 80, 0)
+        #     pyxel.rect(10, 250, 224 - 20, 40, 0)
+        #     pyxel.text(95, 170, "ICE CRIMER", 7)
+        #     pyxel.text(60, 200, "GAME OVER : YORU SCORE is "+ str(self.score) , 7)
+        #     pyxel.text(60, 270, "press space to REstart!!", 7)
 
     def Bump(self, currentenemy, num):
         enemy = currentenemy.sum[self.player.floor]
