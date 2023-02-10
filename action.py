@@ -15,12 +15,13 @@ class App:
         self.score = 0
         self.scoreFlag = False
         self.enemy1Flag = False
+        self.BumpFlag = 0
         pyxel.play(1,10, loop=True)
         pyxel.run(self.update, self.draw);
 
     def update(self):
         if self.gameMode == 0:
-            if pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
+            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (10 <= pyxel.mouse_x <= 214) and (250 <= pyxel.mouse_y <= 310)) or pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
                 self.gameMode = 1
         elif self.gameMode == 1:
             if self.player.currentWindow != 0 :
@@ -46,7 +47,7 @@ class App:
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (10 <= pyxel.mouse_x <= 214) and (330 <= pyxel.mouse_y <= 370):
                 template_link= "https://twitter.com/intent/tweet?text=PyxelGame%22iceClimber%22%E3%81%A7%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%81%9F%E3%82%88%EF%BC%81%0A%E7%A7%81%E3%81%AEscore%E3%81%AF{}%E7%82%B9%E3%81%A7%E3%81%97%E3%81%9F%EF%BC%81%0A%E4%B8%80%E7%B7%92%E3%81%AB%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%82%8B%E2%87%A9%0Ahttps%3A%2F%2Ftsola-20011118.github.io%2Ficecrimer%2F"
                 webbrowser.open(template_link.format(self.score))
-            if pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
+            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (10 <= pyxel.mouse_x <= 214) and (250 <= pyxel.mouse_y <= 310)) or pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
                 self.gameMode = 0
                 self.window = []
                 self.window.append(Window(0))
@@ -57,6 +58,12 @@ class App:
                 self.score = 0
                 self.scoreFlag = False
                 self.enemy1Flag = False
+        if self.BumpFlag != 0:
+            if self.BumpFlag == -2:
+                self.window[self.player.currentWindow].y += 8
+            if self.BumpFlag == -1:
+                self.window[self.player.currentWindow].y -= 8
+            self.BumpFlag += 1
         self.window[self.player.currentWindow].update(self.player.windowChangeUP, self.player.windowChangeDOWN)
 
     def draw(self):
@@ -88,6 +95,7 @@ class App:
         if self.player.y == self.player.floor * 16 * 3 + 16:
             if enemy.aliveFlag == False and enemy.x - 6 < self.player.x and self.player.x < enemy.x + 16 - 6 and self.player.actionFlag == False:
                 self.enemy1Flag = True
+                self.BumpFlag = -2
                 pyxel.play(0, 4, loop=False)
             if self.enemy1Flag == True :
                 self.player.life -= num
@@ -266,10 +274,10 @@ class Player:
 
     def moveRL(self, window):
         if self.head == 0:
-            if pyxel.btnp(pyxel.KEY_RIGHT, 1, 1):
+            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (0 <= pyxel.mouse_x <= 112) and (0 <= pyxel.mouse_y <= 16 * 3 * 8)) or pyxel.btnp(pyxel.KEY_RIGHT, 1, 1):
                 self.x += 2
                 self.face = 1
-            if pyxel.btnp(pyxel.KEY_LEFT, 1, 1):
+            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (112 <= pyxel.mouse_x <= 224) and (0 <= pyxel.mouse_y <= 16 * 3 * 8)) or pyxel.btnp(pyxel.KEY_LEFT, 1, 1):
                 self.x -= 2
                 self.face = -1
 
