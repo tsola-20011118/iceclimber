@@ -1,4 +1,6 @@
 import pyxel
+import math
+import webbrowser
 
 class App:
     def __init__(self):
@@ -41,6 +43,9 @@ class App:
             if self.player.life <= 0:
                 self.gameMode = 2
         if self.gameMode == 2:
+            if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (10 <= pyxel.mouse_x <= 214) and (330 <= pyxel.mouse_y <= 370):
+                template_link= "https://twitter.com/intent/tweet?text=PyxelGame%22iceClimber%22%E3%81%A7%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%81%9F%E3%82%88%EF%BC%81%0A%E7%A7%81%E3%81%AEscore%E3%81%AF{}%E7%82%B9%E3%81%A7%E3%81%97%E3%81%9F%EF%BC%81%0A%E4%B8%80%E7%B7%92%E3%81%AB%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%82%8B%E2%87%A9%0Ahttps%3A%2F%2Ftsola-20011118.github.io%2Ficecrimer%2F"
+                webbrowser.open(template_link.format(self.score))
             if pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
                 self.gameMode = 0
                 self.window = []
@@ -53,28 +58,30 @@ class App:
                 self.scoreFlag = False
                 self.enemy1Flag = False
         self.window[self.player.currentWindow].update(self.player.windowChangeUP, self.player.windowChangeDOWN)
-        return 0
 
     def draw(self):
         pyxel.cls(1);
         if self.player.currentWindow != 0: self.window[self.player.currentWindow - 1].draw()
         self.window[self.player.currentWindow].draw()
         self.window[self.player.currentWindow + 1].draw()
-        # if self.gameMode == 0:
-        #     pyxel.rect(10, 150, 224 - 20, 80, 0)
-        #     pyxel.rect(10, 250, 224 - 20, 40, 0)
-        #     pyxel.text(90, 170, "ICE CRIMER", 7)
-        #     pyxel.text(40, 200, "Collect coins while avoiding enemies!!", 7)
-        #     pyxel.text(70, 270, "press space to start!!", 7)
-        # elif self.gameMode == 1:
-        #     self.player.draw()
-        #     pyxel.text(224 - len(str(self.score)) * 4, 4, str(self.score), 8)
-        # elif self.gameMode == 2:
-        #     pyxel.rect(10, 150, 224 - 20, 80, 0)
-        #     pyxel.rect(10, 250, 224 - 20, 40, 0)
-        #     pyxel.text(95, 170, "ICE CRIMER", 7)
-        #     pyxel.text(60, 200, "GAME OVER : YORU SCORE is "+ str(self.score) , 7)
-        #     pyxel.text(60, 270, "press space to REstart!!", 7)
+        if self.gameMode == 0:
+            pyxel.rect(10, 150, 224 - 20, 80, 0)
+            pyxel.rect(10, 250, 224 - 20, 40, 0)
+            pyxel.blt(40, 158, 0, 0, 48,  16 * 12, 16 * 4 * 2, 0)
+            pyxel.text(70, 270, "press space to start!!", 7)
+        elif self.gameMode == 1:
+            self.player.draw()
+            self.Number()
+        elif self.gameMode == 2:
+            pyxel.rect(10, 150, 224 - 20, 80, 0)
+            pyxel.rect(10, 250, 224 - 20, 60, 0)
+            pyxel.rect(10, 330, 224 - 20, 40, 0)
+            pyxel.blt(40, 158, 0, 0, 48,  16 * 12, 16 * 4 * 2, 0)
+            pyxel.text(40,260, "YOUR SCORE is "+ str(self.score) , 7)
+            pyxel.text(40,275, "HIGH SCORE is "+ str(self.score) , 7)
+            pyxel.text(60, 290, "press space to REstart!!", 7)
+            pyxel.text(80, 350, "Let's Shere!!!", 7)
+        pyxel.rect(pyxel.mouse_x - 1, pyxel.mouse_y - 1, 2, 2, 8)
 
     def Bump(self, currentenemy, num):
         enemy = currentenemy.sum[self.player.floor]
@@ -115,6 +122,27 @@ class App:
             currentjem.jemFlag[self.player.floor] = True
             self.score += 100
             pyxel.play(0, 3, loop=False)
+
+    def Number(self):
+        score = str(self.score)
+        digit = len(score)
+        i = 0
+        while i < digit:
+            self.NumberImage(int(score[i]), int(digit), i)
+            i += 1
+
+    def NumberImage(self, num, digit, i):
+        if num == 0:
+            y = 48
+            x = 64
+        else:
+            x = 16 * ((num % 5) - 1)
+            if num <= 5:
+                y = 32
+            else:
+                y = 48
+        pyxel.blt(224 - 16 * (digit - i), 16 * 3 * 8 - 16, 2, x, y, 16, 16, 0)
+
 
 
 class Player:
