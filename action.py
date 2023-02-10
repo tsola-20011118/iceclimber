@@ -237,9 +237,9 @@ class Player:
                 self.ladderUP = True
             else:
                 self.ladderUP = False
-            if int(self.floor) != 7 and window.back.ladder[int(self.floor + 1)] * 16 - 6 < self.x and window.back.ladder[int(self.floor + 1)] * 16 + 18 > self.x:
+            if int(self.floor) != floorNum - 1 and window.back.ladder[int(self.floor + 1)] * 16 - 6 < self.x and window.back.ladder[int(self.floor + 1)] * 16 + 18 > self.x:
                 self.ladderDOWN = True
-            elif int(self.floor) == 7 and downwindow != None and downwindow.back.ladder[0] * 16 - 6 < self.x and downwindow.back.ladder[0] * 16 + 18 > self.x:
+            elif int(self.floor) == floorNum - 1 and downwindow != None and downwindow.back.ladder[0] * 16 - 6 < self.x and downwindow.back.ladder[0] * 16 + 18 > self.x:
                 self.ladderDOWN = True
             else:
                 self.ladderDOWN = False
