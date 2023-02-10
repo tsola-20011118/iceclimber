@@ -4,7 +4,7 @@ import webbrowser
 
 class App:
     def __init__(self):
-        pyxel.init(224, 16 * 3 * 8, fps=30)  # 224/12=18 16 * 3 * 8
+        pyxel.init(224, 16 * 3 * 8 + 100, fps=30)  # 224/12=18 16 * 3 * 8
         pyxel.load("action.pyxres")
         self.window = [];
         self.window.append(Window(0));
@@ -21,7 +21,7 @@ class App:
 
     def update(self):
         if self.gameMode == 0:
-            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (10 <= pyxel.mouse_x <= 214) and (250 <= pyxel.mouse_y <= 310)) or pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
+            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (70 <= pyxel.mouse_x <= 154) and (16 * 3 * 8 + 30 <= pyxel.mouse_y <= 16 * 3 * 8 + 70)) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (10 <= pyxel.mouse_x <= 214) and (250 <= pyxel.mouse_y <= 310)) or pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
                 self.gameMode = 1
         elif self.gameMode == 1:
             if self.player.currentWindow != 0 :
@@ -47,7 +47,7 @@ class App:
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (10 <= pyxel.mouse_x <= 214) and (330 <= pyxel.mouse_y <= 370):
                 template_link= "https://twitter.com/intent/tweet?text=PyxelGame%22iceClimber%22%E3%81%A7%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%81%9F%E3%82%88%EF%BC%81%0A%E7%A7%81%E3%81%AEscore%E3%81%AF{}%E7%82%B9%E3%81%A7%E3%81%97%E3%81%9F%EF%BC%81%0A%E4%B8%80%E7%B7%92%E3%81%AB%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%82%8B%E2%87%A9%0Ahttps%3A%2F%2Ftsola-20011118.github.io%2Ficecrimer%2F"
                 webbrowser.open(template_link.format(self.score))
-            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (10 <= pyxel.mouse_x <= 214) and (250 <= pyxel.mouse_y <= 310)) or pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
+            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (70 <= pyxel.mouse_x <= 154) and (16 * 3 * 8 + 30 <= pyxel.mouse_y <= 16 * 3 * 8 + 70)) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (10 <= pyxel.mouse_x <= 214) and (250 <= pyxel.mouse_y <= 310)) or pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
                 self.gameMode = 0
                 self.window = []
                 self.window.append(Window(0))
@@ -75,7 +75,7 @@ class App:
             pyxel.rect(10, 150, 224 - 20, 80, 0)
             pyxel.rect(10, 250, 224 - 20, 40, 0)
             pyxel.blt(40, 158, 0, 0, 48,  16 * 12, 16 * 4 * 2, 0)
-            pyxel.text(70, 270, "press space to start!!", 7)
+            pyxel.text(70, 270, "press space OR Attack to start!!", 7)
         elif self.gameMode == 1:
             self.player.draw()
             self.Number()
@@ -86,8 +86,13 @@ class App:
             pyxel.blt(40, 158, 0, 0, 48,  16 * 12, 16 * 4 * 2, 0)
             pyxel.text(40,260, "YOUR SCORE is "+ str(self.score) , 7)
             pyxel.text(40,275, "HIGH SCORE is "+ str(self.score) , 7)
-            pyxel.text(60, 290, "press space to REstart!!", 7)
+            pyxel.text(60, 290, "press space OR Attack to REstart!!", 7)
             pyxel.text(80, 350, "Let's Shere!!!", 7)
+        pyxel.rect(5, 16 * 3 * 8 + 5 , 60, 90, 0)
+        pyxel.rect(70, 16 * 3 * 8 , 84, 30, 0)
+        pyxel.rect(70, 16 * 3 * 8 + 35, 84, 30, 8)
+        pyxel.rect(70, 16 * 3 * 8 + 70, 84, 30, 0)
+        pyxel.rect(159, 16 * 3 * 8 + 5 , 60, 90, 0)
         pyxel.rect(pyxel.mouse_x - 1, pyxel.mouse_y - 1, 2, 2, 8)
 
     def Bump(self, currentenemy, num):
@@ -229,7 +234,7 @@ class Player:
 
     def moveUD(self):
         if self.head == 0 and self.ladderUP == True:
-            if pyxel.btnp(pyxel.KEY_UP, 1, 1):
+            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (70 <= pyxel.mouse_x <= 154) and (16 * 3 * 8<= pyxel.mouse_y <= 16 * 3 * 8 + 30)) or pyxel.btnp(pyxel.KEY_UP, 1, 1):
                 self.head = -10
                 self.ladderUP = False
                 self.tempY = self.y
@@ -241,7 +246,7 @@ class Player:
             else:
                 self.y -= 4
         if self.head == 0 and self.ladderDOWN == True:
-            if pyxel.btnp(pyxel.KEY_DOWN, 1, 1):
+            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (70 <= pyxel.mouse_x <= 154) and (16 * 3 * 8 + 70 <= pyxel.mouse_y <= 16 * 3 * 8 + 100)) or pyxel.btnp(pyxel.KEY_DOWN, 1, 1):
                 self.head = 10
                 self.ladderDOWN = False
                 self.tempY = self.y
@@ -253,11 +258,11 @@ class Player:
             else:
                 self.y += 4
         if self.head == -5 or self.head == 5:
-            if pyxel.btnp(pyxel.KEY_UP, 1, 1):
+            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (70 <= pyxel.mouse_x <= 154) and (16 * 3 * 8<= pyxel.mouse_y <= 16 * 3 * 8 + 30)) or pyxel.btnp(pyxel.KEY_UP, 1, 1):
                 self.head = -1
                 self.ladderUP = False
                 pyxel.play(0, 0, loop=False)
-            if pyxel.btnp(pyxel.KEY_DOWN, 1, 1):
+            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (70 <= pyxel.mouse_x <= 154) and (16 * 3 * 8 + 70 <= pyxel.mouse_y <= 16 * 3 * 8 + 100)) or pyxel.btnp(pyxel.KEY_DOWN, 1, 1):
                 self.head = 1
                 self.ladderDOWN = False
                 pyxel.play(0, 1, loop=False)
@@ -274,15 +279,15 @@ class Player:
 
     def moveRL(self, window):
         if self.head == 0:
-            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (0 <= pyxel.mouse_x <= 112) and (0 <= pyxel.mouse_y <= 16 * 3 * 8)) or pyxel.btnp(pyxel.KEY_RIGHT, 1, 1):
+            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (154 <= pyxel.mouse_x <= 224) and (16 * 3 * 8 + 5<= pyxel.mouse_y <= 16 * 3 * 8 + 90)) or pyxel.btnp(pyxel.KEY_RIGHT, 1, 1):
                 self.x += 2
                 self.face = 1
-            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (112 <= pyxel.mouse_x <= 224) and (0 <= pyxel.mouse_y <= 16 * 3 * 8)) or pyxel.btnp(pyxel.KEY_LEFT, 1, 1):
+            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (0 <= pyxel.mouse_x <= 70) and (16 * 3 * 8 + 5<= pyxel.mouse_y <= 16 * 3 * 8 + 90)) or pyxel.btnp(pyxel.KEY_LEFT, 1, 1):
                 self.x -= 2
                 self.face = -1
 
     def action(self):
-        if pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
+        if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (70 <= pyxel.mouse_x <= 154) and (16 * 3 * 8 + 30 <= pyxel.mouse_y <= 16 * 3 * 8 + 70)) or pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
             self.actionFlag = True
             pyxel.play(0, 2, loop=False)
         if self.actionFlag == True:
