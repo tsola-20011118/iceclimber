@@ -186,6 +186,9 @@ class App:
         if num == 0:
             y = 48
             x = 64
+        elif num == 5:
+            y = 32
+            x = 64
         else:
             x = 16 * ((num % 5) - 1)
             if num <= 5:
