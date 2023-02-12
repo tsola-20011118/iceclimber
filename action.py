@@ -55,7 +55,7 @@ class App:
                 if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (windowSizeX - 16 <= pyxel.mouse_x <= windowSizeX) and (0 <= pyxel.mouse_y <= 16):
                     self.gameMode = -10
             if self.gameMode == 2:
-                if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (10 <= pyxel.mouse_x <= 214) and (330 <= pyxel.mouse_y <= 370):
+                if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT,1, 1) and (windowSizeX - 32 - 8 - 32 + 4 <= pyxel.mouse_x <= windowSizeX - 32 - 8 - 32 + 4 + 32) and (106 + 16 * 5 + 8 <= pyxel.mouse_y <= 106 + 16 * 5 + 8 + 16):
                     template_link= "https://twitter.com/intent/tweet?text=PyxelGame%22iceClimber%22%E3%81%A7%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%81%9F%E3%82%88%EF%BC%81%0A%E7%A7%81%E3%81%AEscore%E3%81%AF{}%E7%82%B9%E3%81%A7%E3%81%97%E3%81%9F%EF%BC%81%0A%E4%B8%80%E7%B7%92%E3%81%AB%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%82%8B%E2%87%A9%0Ahttps%3A%2F%2Ftsola-20011118.github.io%2Ficecrimer%2F"
                     webbrowser.open(template_link.format(self.score))
                 if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (40 - 4 + 8 <= pyxel.mouse_x <= 40 - 4 + 8 + 16 * 9) and (106 + 16 * 7 <= pyxel.mouse_y <= 106 + 16 * 7 + 16)):
@@ -130,13 +130,7 @@ class App:
                     blty = 110
             pyxel.blt(40 - 4, blty, 0, 0, 48,  16 * 10 - 8, 16 * 4, 3)
             self.gameStarttime += 1
-        pyxel.rect(5, windowSizeY + 5 , 60, 90, 0)
-        pyxel.rect(70, windowSizeY , 84, 30, 0)
-        pyxel.rect(70, windowSizeY + 35, 84, 30, 8)
-        pyxel.text(95, windowSizeY + 45, "ATTACK!!", 7)
-        pyxel.rect(70, windowSizeY + 70, 84, 30, 0)
-        pyxel.rect(159, windowSizeY + 5 , 60, 90, 0)
-        
+        pyxel.blt(0, windowSizeY, 1, 0, 64 + 8,  16 * 14, 100, 3)
         pyxel.rect(pyxel.mouse_x - 1, pyxel.mouse_y - 1, 2, 2, 8)
 
     def Bump(self, currentenemy, num):
