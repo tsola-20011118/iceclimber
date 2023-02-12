@@ -2,7 +2,7 @@ import pyxel
 import math
 import webbrowser
 
-windowSizeX = 224
+windowSizeX = 16 * 14
 windowSizeY = 16 * 3 * 6
 floorNum = 6
 
@@ -16,6 +16,7 @@ class App:
         self.windowNum = 1;
         self.player = Player();
         self.gameMode = 0
+        self.gameStarttime = 0
         self.score = 0
         self.scoreFlag = False
         self.enemy1Flag = False
@@ -24,10 +25,12 @@ class App:
         pyxel.run(self.update, self.draw);
 
     def update(self):
-        if self.gameMode != -1:
+        if self.gameMode != -10:
+            # 初期画面
             if self.gameMode == 0:
-                if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (70 <= pyxel.mouse_x <= 154) and (windowSizeY + 30 <= pyxel.mouse_y <= windowSizeY + 70)) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (10 <= pyxel.mouse_x <= 214) and (250 <= pyxel.mouse_y <= 310)) or pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
+                if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (40 - 4 + 8 <= pyxel.mouse_x <= 40 - 4 + 8 + 16 * 7) and (106 + 16 * 5 <= pyxel.mouse_y <= 106 + 16 * 5 + 16)):
                     self.gameMode = 1
+            # play画面
             elif self.gameMode == 1:
                 if self.player.currentWindow != 0 :
                     self.player.update(self.window[self.player.currentWindow], self.window[self.player.currentWindow - 1])
@@ -47,21 +50,22 @@ class App:
                 self.Bump(self.window[self.player.currentWindow].moveenemy, 1)
                 self.Bump(self.window[self.player.currentWindow].moveenemy2, 1)
                 if self.player.life <= 0:
+                    self.gameStarttime = 0
                     self.gameMode = 2
                 if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (windowSizeX - 16 <= pyxel.mouse_x <= windowSizeX) and (0 <= pyxel.mouse_y <= 16):
-                    self.gameMode = -1
+                    self.gameMode = -10
             if self.gameMode == 2:
                 if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (10 <= pyxel.mouse_x <= 214) and (330 <= pyxel.mouse_y <= 370):
                     template_link= "https://twitter.com/intent/tweet?text=PyxelGame%22iceClimber%22%E3%81%A7%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%81%9F%E3%82%88%EF%BC%81%0A%E7%A7%81%E3%81%AEscore%E3%81%AF{}%E7%82%B9%E3%81%A7%E3%81%97%E3%81%9F%EF%BC%81%0A%E4%B8%80%E7%B7%92%E3%81%AB%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%82%8B%E2%87%A9%0Ahttps%3A%2F%2Ftsola-20011118.github.io%2Ficecrimer%2F"
                     webbrowser.open(template_link.format(self.score))
-                if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (70 <= pyxel.mouse_x <= 154) and (windowSizeY + 30 <= pyxel.mouse_y <= windowSizeY + 70)) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and (10 <= pyxel.mouse_x <= 214) and (250 <= pyxel.mouse_y <= 310)) or pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
+                if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (40 - 4 + 8 <= pyxel.mouse_x <= 40 - 4 + 8 + 16 * 9) and (106 + 16 * 7 <= pyxel.mouse_y <= 106 + 16 * 7 + 16)):
                     self.gameMode = 0
                     self.window = []
                     self.window.append(Window(0))
                     self.window.append(Window(-windowSizeY))
                     self.windowNum = 1
                     self.player = Player()
-                    self.gameMode = 0
+                    self.gameMode = 1
                     self.score = 0
                     self.scoreFlag = False
                     self.enemy1Flag = False
@@ -82,29 +86,57 @@ class App:
         self.window[self.player.currentWindow].draw()
         self.window[self.player.currentWindow + 1].draw()
         if self.gameMode == 0:
-            pyxel.rect(10, 150, windowSizeX - 20, 80, 0)
-            pyxel.rect(10, 250, windowSizeX - 20, 40, 0)
-            pyxel.blt(40, 158, 0, 0, 48,  16 * 12, 16 * 4, 0)
-            pyxel.text(70, 270, "press space OR Attack to start!!", 7)
-        elif self.gameMode == 1 or self.gameMode == -1:
+            blty = self.gameStarttime * 10
+            if blty > 106:
+                if blty > 106 + 16 * (4 + 2 + 2 + 1):
+                    blty =  106 + 16 * (4 + 2 + 2 + 1)
+                pyxel.rect(32, 106, windowSizeX - 64, blty - 106, 7)
+                if blty  > 106 + 16 * 4:
+                    if blty > 106 + 16 * 4 + 16:
+                        blty = 106 + 16 * 4 + 16
+                    pyxel.blt(40 - 4 + 8, blty, 0, 0, 16 * 7,  16 * 5, 16, 3)
+                    pyxel.blt(40 - 4 + 8 , blty + 16 * 2, 0, 16 * 5, 16 * 7,  16 * 9, 16, 3)
+                    if (40 - 4 + 8 <= pyxel.mouse_x <= 40 + 8 + 16 * 5) and (blty <= pyxel.mouse_y <= blty + 16):
+                        pyxel.blt(40 - 4 + 8, blty, 0, 0, 16 * 8,  16 * 5, 16, 3)
+                    if (40 - 4 + 8 <= pyxel.mouse_x <= 40 + 8 + 16 * 9) and (blty + 32 <= pyxel.mouse_y <= blty + 48):
+                        pyxel.blt(40 - 4 + 8 , blty + 16 * 2, 0, 16 * 5, 16 * 8,  16 * 9, 16, 3)
+                if blty > 110:
+                    blty = 110
+            pyxel.blt(40 - 4, blty, 0, 0, 48,  16 * 10 - 8, 16 * 4, 3)
+            self.gameStarttime += 1
+        elif self.gameMode == 1 or self.gameMode == -10:
             self.player.draw()
-            self.Number()
+            self.Number(windowSizeX, windowSizeY)
+            if self.gameMode == 1:
+                pyxel.blt(windowSizeX - 16, 0, 0, 16 * 5, 0,  16, 16, 0)
+            if self.gameMode == -10:
+                pyxel.blt(windowSizeX - 16, 0, 0, 16 * 5, 16,  16, 16, 0)
         elif self.gameMode == 2:
-            pyxel.rect(10, 150, windowSizeX - 20, 80, 0)
-            pyxel.rect(10, 250, windowSizeX - 20, 60, 0)
-            pyxel.rect(10, 330, windowSizeX - 20, 40, 0)
-            pyxel.blt(40, 158, 0, 0, 48,  16 * 12, 16 * 4, 0)
-            pyxel.text(40,260, "YOUR SCORE is "+ str(self.score) , 7)
-            pyxel.text(40,275, "HIGH SCORE is "+ str(self.score) , 7)
-            pyxel.text(60, 290, "press space OR Attack to REstart!!", 7)
-            pyxel.text(80, 350, "Let's Shere!!!", 7)
+            blty = self.gameStarttime * 10
+            if blty > 106:
+                if blty > 106 + 16 * (4 + 2 + 2 + 1):
+                    blty =  106 + 16 * (4 + 2 + 2 + 1)
+                pyxel.rect(32, 106, windowSizeX - 64, blty - 106, 7)
+                if blty  > 106 + 16 * 4:
+                    if blty > 106 + 16 * 4 + 16:
+                        blty = 106 + 16 * 4 + 16
+                    pyxel.blt(40 - 4, blty - 8, 0, 0, 16 * 11,  16 * 9, 16, 3)
+                    self.Number(windowSizeX - 32 - 8 - 32, blty - 8 + 16 + 16)
+                    pyxel.blt(windowSizeX - 32 - 8 - 32 + 4, blty - 8 + 16, 0, 0, 16 * 12,  16 * 2, 16, 3)
+                    pyxel.blt(40 - 4 + 8 , blty + 16 * 2, 0, 0, 16 * 9,  16 * 7, 16, 3)
+                    if (40 - 4 + 8 <= pyxel.mouse_x <= 40 + 8 + 16 * 9) and (blty + 32 <= pyxel.mouse_y <= blty + 48):
+                        pyxel.blt(40 - 4 + 8 , blty + 16 * 2, 0, 0, 16 * 10,  16 * 7, 16, 3)
+                if blty > 110:
+                    blty = 110
+            pyxel.blt(40 - 4, blty, 0, 0, 48,  16 * 10 - 8, 16 * 4, 3)
+            self.gameStarttime += 1
         pyxel.rect(5, windowSizeY + 5 , 60, 90, 0)
         pyxel.rect(70, windowSizeY , 84, 30, 0)
         pyxel.rect(70, windowSizeY + 35, 84, 30, 8)
         pyxel.text(95, windowSizeY + 45, "ATTACK!!", 7)
         pyxel.rect(70, windowSizeY + 70, 84, 30, 0)
         pyxel.rect(159, windowSizeY + 5 , 60, 90, 0)
-        pyxel.blt(windowSizeX - 16, 0, 0, 0, 112,  16, 16, 0)
+        
         pyxel.rect(pyxel.mouse_x - 1, pyxel.mouse_y - 1, 2, 2, 8)
 
     def Bump(self, currentenemy, num):
@@ -148,15 +180,15 @@ class App:
             self.score += 100
             pyxel.play(0, 3, loop=False)
 
-    def Number(self):
+    def Number(self, x, y):
         score = str(self.score)
         digit = len(score)
         i = 0
         while i < digit:
-            self.NumberImage(int(score[i]), int(digit), i)
+            self.NumberImage(int(score[i]), int(digit), i, x, y)
             i += 1
 
-    def NumberImage(self, num, digit, i):
+    def NumberImage(self, num, digit, i, wx, wy):
         if num == 0:
             y = 48
             x = 64
@@ -166,7 +198,7 @@ class App:
                 y = 32
             else:
                 y = 48
-        pyxel.blt(windowSizeX - 16 * (digit - i), windowSizeY - 16, 2, x, y, 16, 16, 0)
+        pyxel.blt(wx - 16 * (digit - i), wy - 16, 2, x, y, 16, 16, 0)
 
 
 
