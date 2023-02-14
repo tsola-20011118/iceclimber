@@ -11,8 +11,8 @@ class App:
         pyxel.init(windowSizeX, windowSizeY + 100, fps=30)
         pyxel.load("action.pyxres")
         self.window = [];
-        self.window.append(Window(0));
-        self.window.append(Window(-windowSizeY))
+        self.window.append(Window(0, 0));
+        self.window.append(Window(-windowSizeY, 0))
         self.windowNum = 1;
         self.player = Player();
         self.gameMode = 0
@@ -21,6 +21,7 @@ class App:
         self.scoreFlag = False
         self.enemy1Flag = False
         self.BumpFlag = 0
+        self.ItemFlag = 0
         pyxel.play(1,10, loop=True)
         pyxel.run(self.update, self.draw);
 
@@ -37,7 +38,7 @@ class App:
                 else:
                     self.player.update(self.window[self.player.currentWindow], None)
                 if self.player.currentWindow + 1 > self.windowNum:
-                    self.window.append(Window(-windowSizeY))
+                    self.window.append(Window(-windowSizeY, self.player.currentWindow))
                     self.windowNum += 1;
                 if self.player.windowChangeUP == True:
                     if self.player.currentWindow != 0:
@@ -49,6 +50,7 @@ class App:
                 self.Attack(self.window[self.player.currentWindow].enemy)
                 self.Bump(self.window[self.player.currentWindow].moveenemy, 1)
                 self.Bump(self.window[self.player.currentWindow].moveenemy2, 1)
+                self.ItemGet( self.window[self.player.currentWindow].item)
                 if self.player.life <= 0:
                     self.gameStarttime = 0
                     self.gameMode = 2
@@ -122,16 +124,31 @@ class App:
                         blty = 106 + 16 * 4 + 16
                     pyxel.blt(40 - 4, blty - 8, 0, 0, 16 * 11,  16 * 9, 16, 3)
                     self.Number(windowSizeX - 32 - 8 - 32, blty - 8 + 16 + 16)
-                    pyxel.blt(windowSizeX - 32 - 8 - 32 + 4, blty - 8 + 16, 0, 0, 16 * 12,  16 * 2, 16, 3)
+                    pyxel.blt(windowSizeX - 32 - 8 - 32 + 4, blty - 8 + 16, 0, 16 * 14, 16 * 8,  16 * 9, 16, 33)
                     pyxel.blt(40 - 4 + 8 , blty + 16 * 2, 0, 0, 16 * 9,  16 * 7, 16, 3)
                     if (40 - 4 + 8 <= pyxel.mouse_x <= 40 + 8 + 16 * 9) and (blty + 32 <= pyxel.mouse_y <= blty + 48):
                         pyxel.blt(40 - 4 + 8 , blty + 16 * 2, 0, 0, 16 * 10,  16 * 7, 16, 3)
                 if blty > 110:
                     blty = 110
-            pyxel.blt(40 - 4, blty, 0, 0, 48,  16 * 10 - 8, 16 * 4, 3)
+            pyxel.blt(40 - 4, blty, 0, 0, 16 * (3 + 9),  16 * 10 - 8, 16 * 4, 3)
             self.gameStarttime += 1
         pyxel.blt(0, windowSizeY, 1, 0, 64 + 8,  16 * 14, 100, 3)
         pyxel.rect(pyxel.mouse_x - 1, pyxel.mouse_y - 1, 2, 2, 8)
+        pyxel.text(0,16, str(self.ItemFlag), 0)
+
+    def ItemGet(self, item):
+        if item.flag == True and self.ItemFlag == 0 and self.player.y == item.floor * 16 * 3 + 16:
+            if item.place * 16 < self.player.x and self.player.x < item.place * 16 + 16:
+                self.ItemFlag = 1
+                item.flag = False
+        if self.ItemFlag != 0:
+            self.ItemFlag += 1
+            if self.ItemFlag > 60:
+                self.ItemFlag = 0
+
+    def Buster(self, currentenemy):
+        if self.ItemFlag != 0 and self.player.actionFlag == True:
+            self.Attack(currentenemy)
 
     def Bump(self, currentenemy, num):
         enemy = currentenemy.sum[self.player.floor]
@@ -321,10 +338,10 @@ class Player:
     def moveRL(self, window):
         if self.head == 0:
             if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (154 <= pyxel.mouse_x <= windowSizeX) and (windowSizeY + 5<= pyxel.mouse_y <= windowSizeY + 90)) or pyxel.btnp(pyxel.KEY_RIGHT, 1, 1):
-                self.x += 2
+                self.x += 2.2
                 self.face = 1
             if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (0 <= pyxel.mouse_x <= 70) and (windowSizeY + 5<= pyxel.mouse_y <= windowSizeY + 90)) or pyxel.btnp(pyxel.KEY_LEFT, 1, 1):
-                self.x -= 2
+                self.x -= 2.2
                 self.face = -1
 
     def action(self):
@@ -409,7 +426,7 @@ class Player:
 
 
 class Window:
-    def __init__(self, y):
+    def __init__(self, y, window):
         self.x = 0
         self.y = y
         self.back = self.Background(self.x, self.y)
@@ -417,6 +434,7 @@ class Window:
         self.enemy = self.Enemy(self.x, self.y, self.back.ladder, self.jem.jem)
         self.moveenemy = self.MovingEnemy(self.x, self.y, self.back.ladder, self.jem.jem, self.enemy, 1.5)
         self.moveenemy2 = self.MovingEnemy(self.x, self.y, self.back.ladder, self.jem.jem, self.enemy , 2)
+        self.item = self.Item(self.x, self.y, self.back.ladder, self.jem.jem, self.enemy)
 
     def update(self, up, down):
         if up == True:
@@ -428,6 +446,7 @@ class Window:
         self.enemy.update(self.y)
         self.moveenemy.update(self.y, self.back.ladder)
         self.moveenemy2.update(self.y, self.back.ladder)
+        self.item.update(self.y)
 
     def draw(self):
         self.back.draw()
@@ -435,6 +454,7 @@ class Window:
         self.enemy.draw()
         self.moveenemy.draw()
         self.moveenemy2.draw()
+        self.item.draw()
 
     class Background:
         def __init__(self, x, y):
@@ -453,6 +473,25 @@ class Window:
                         if x == self.ladder[int((y - 2) / 3)]:
                             pyxel.blt(self.x + x * 16, self.y + y *16 - 56, 1, 48, 0, 24, 56, 8)
                         pyxel.blt(self.x + x * 16, self.y +y * 16, 1, 16, 0, 16, 16, 0)
+
+    class Item:
+        def __init__(self, x, y, ladder, jem, enemy):
+            self.x = x
+            self.y = y
+            self.floor = pyxel.rndi(0, 5)
+            self.place = pyxel.rndi(1, 10)
+            for p in range(8):
+                if self.place == ladder[p] or self.place == jem[p] or self.place == enemy.sum[p].x:
+                    self.place = pyxel.rndi(1, 10)
+            self.flag = True
+            self.life = 6 * 4 + 3
+
+        def update(self, y):
+            self.y = y
+
+        def draw(self):
+            if self.flag == True:
+                pyxel.blt(self.x + self.place * 16, self.y + (self.floor * 3 + 1) * 16, 1, 0, 32, 16, 16, 3)
 
     class Jem:
         def __init__(self, x, y, ladder):
