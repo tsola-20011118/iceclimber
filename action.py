@@ -105,8 +105,6 @@ class App:
             self.gameStarttime += 1
             pyxel.rect(pyxel.mouse_x - 1, pyxel.mouse_y - 1, 2, 2, 8)
         ImageBank(0, 0, 100)
-        pyxel.text(0,16, str(self.player.data.canBaster), 0)
-
     def windowMove(self, data):
         if self.windowChange == 0:
             if data.y == -16:
@@ -183,7 +181,6 @@ class App:
                         self.data.canBaster = False
 
         def draw(self):
-            # pyxel.text(0,  0, str(self.data.direction), 0)
             if self.data.direction == 0:
                 ImageBank(self.data.x, self.y + self.data.y, 28)
             elif self.data.up != 0:
@@ -370,9 +367,10 @@ class App:
                 self.jem = self.Static(self.y, self.same)
                 self.same.append(self.jem.data.place)
                 self.item =[]
-                if self.windowNum > 4 and self.floorNum == self.randomFloor:
+                if self.windowNum > 5 and self.floorNum == self.randomFloor:
                     self.item.append(self.Static(self.y, self.same))
-                    # self.same.append(self.item.data.place) #TODO いる？
+                    self.same.append(self.item.data.place)
+                    self.moveEnemy.append(self.Dynamic(self.y, self.same))
                 self.moveEnemy = []
                 self.moveEnemy.append(self.Dynamic(self.y, self.same))
                 if self.windowNum > 2:
@@ -581,7 +579,6 @@ def ImageBank(x, y, num):
         temp = num - 1000
         for i in range(temp):
             pyxel.blt(x + i * 16, y, 0, 16 * 10,0,  16, 16, 0)
-            # pyxel.text(0, 0, str(i), 0)
 
 def moveOut(x, y, ix, iy, iw ,ih,width):
     if -2 * width <= x and x <= 0:
