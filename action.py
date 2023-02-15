@@ -105,6 +105,8 @@ class App:
             self.gameStarttime += 1
             pyxel.rect(pyxel.mouse_x - 1, pyxel.mouse_y - 1, 2, 2, 8)
         ImageBank(0, 0, 100)
+        pyxel.rect(pyxel.mouse_x - 1, pyxel.mouse_y - 1, 2, 2, 8)
+
     def windowMove(self, data):
         if self.windowChange == 0:
             if data.y == -16:
@@ -203,7 +205,7 @@ class App:
         class Database:
             def __init__(self):
                 self.place = pyxel.rndi(0, 13)
-                self.life = 100
+                self.life = 16
                 self.x = windowSizeX / 2 - 8
                 self.y = floorNum * 16 * 3 - 32
                 self.direction = 0
@@ -220,13 +222,13 @@ class App:
 
         def moveRL(self, data):
             if data.up == 0:
-                if pyxel.btnp(pyxel.KEY_RIGHT, 1, 1):
+                if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (16 * 9.5 <= pyxel.mouse_x <= 16 * 14) and (windowSizeY + 10 <= pyxel.mouse_y <= windowSizeY + 90) and 26 * pyxel.mouse_x >= (pyxel.mouse_y - windowSizeY - 10) * 16 * 4.5 and pyxel.mouse_x * (-26) / 16 / 4.5 + windowSizeY + 89 <= pyxel.mouse_y) or pyxel.btnp(pyxel.KEY_RIGHT, 1, 1):
                     if data.canMove[1]:
                         data.x += data.speed
                     data.direction = 1
                     if data.x >= windowSizeX:
                         data.x -= windowSizeX
-                if data.canMove[0] and pyxel.btnp(pyxel.KEY_LEFT, 1, 1):
+                if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (0 <= pyxel.mouse_x <= 16 * 4.5) and (windowSizeY + 10 <= pyxel.mouse_y <= windowSizeY + 90) and 26 * pyxel.mouse_x <= (pyxel.mouse_y - windowSizeY - 10) * 16 * 4.5 and pyxel.mouse_x * (-26) / 16 / 4.5 + windowSizeY + 87 >= pyxel.mouse_y) or pyxel.btnp(pyxel.KEY_LEFT, 1, 1):
                     if data.canMove[0]:
                         data.x -= data.speed
                     data.direction = -1
@@ -234,7 +236,7 @@ class App:
                         data.x += windowSizeX
 
         def moveUD(self, data):
-            if pyxel.btnp(pyxel.KEY_UP, 1, 1):
+            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeY <= pyxel.mouse_y <= windowSizeY + 30) and 26 * pyxel.mouse_x >= (pyxel.mouse_y - windowSizeY - 10) * 16 * 4.5 and pyxel.mouse_x * (-26) / 16 / 4.5 + windowSizeY + 89 >= pyxel.mouse_y) or pyxel.btnp(pyxel.KEY_UP, 1, 1):
                 if data.up == 0 and data.ladderUP == True:
                     data.up = -1
                     data.tempY = data.y
@@ -243,7 +245,7 @@ class App:
                     data.up = -3
                     data.tempY = data.y
                     pyxel.play(0, 0, loop=False)
-            if pyxel.btnp(pyxel.KEY_DOWN, 1, 1):
+            if  (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeY + 67 <= pyxel.mouse_y <= windowSizeY + 100) and 26 * pyxel.mouse_x <= (pyxel.mouse_y - windowSizeY - 10) * 16 * 4.5 and pyxel.mouse_x * (-26) / 16 / 4.5 + windowSizeY + 89 <= pyxel.mouse_y) or pyxel.btnp(pyxel.KEY_DOWN, 1, 1):
                 if data.up == 0 and data.ladderDOWN == True:
                     data.up = 1
                     data.tempY = data.y
@@ -286,7 +288,7 @@ class App:
 
         def actionMove(self, data):
             if data.up == 0:
-                if pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
+                if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeY + 33 <= pyxel.mouse_y <= windowSizeY + 67) and (16 * 4.5 <= pyxel.mouse_x <= 16 * 9.5)) or pyxel.btnp(pyxel.KEY_SPACE, 1, 1):
                     if data.action % 20 == 0:
                         pyxel.play(0, 2, loop=False)
                     data.action += 1
