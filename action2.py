@@ -10,33 +10,64 @@ class App:
     def __init__(self):
         pyxel.init(windowSizeX, windowSizeY + 100, fps=30)
         pyxel.load("action2.pyxres")
-        pyxel.play(1,10, loop=True)
+        # pyxel.play(1,10, loop=True)
         self.player = self.Player(0)
         self.window = []
-        self.window.append(self.Window(0, 5));
+        self.window.append(self.Window(0, 0));
         self.currentWindow = 0
+        self.windowNum = 0
+        self.changeSpeed = 4
+        self.windowChange = 0
         pyxel.run(self.update, self.draw);
 
     def update(self):
+        if self.windowNum < self.currentWindow + 1:
+            self.window.append(self.Window(-1 * windowSizeY, self.currentWindow + 1))
+            self.windowNum += 1
+        if self.windowChange == self.changeSpeed: self.window[self.currentWindow + 1].update(self.windowChange)
+        self.window[self.currentWindow].update(self.windowChange)
+        if self.currentWindow != 0: self.window[self.currentWindow - 1].update(self.windowChange)
+
         if self.currentWindow == 0:
-            self.player.update(0, self.window[self.currentWindow], 0)
+            self.player.update(self.windowChange, self.window[self.currentWindow], 0)
         else:
-            self.player.update(0, self.window[self.currentWindow],  self.window[self.currentWindow - 1])
-        self.window[self.currentWindow].update()
+            self.player.update(self.windowChange, self.window[self.currentWindow],  self.window[self.currentWindow - 1])
+        self.windowMove(self.player.data)
 
 
     def draw(self):
         pyxel.cls(1);
         self.window[self.currentWindow].draw()
+        if self.windowChange == self.changeSpeed: self.window[self.currentWindow + 1].draw()
+        if self.currentWindow != 0: self.window[self.currentWindow - 1].draw()
         self.player.draw()
         ImageBank(0, 0, 100)
-        # pyxel.text(0, 0, str(self.player.data.ladderUP), 0)
-        # pyxel.text(0, 16, str(self.player.data.ladderDOWN), 0)
-        # pyxel.text(0, 16, str(self.player.data.up), 0)
-        # pyxel.text(0, 32, str(self.player.data.currentFloor), 0)
+        # pyxel.text(0, 0, str(self.player.data.y), 0)
+        # pyxel.text(0, 16, str(self.currentWindow), 0)
+        # pyxel.text(0, 32, str(self.windowChange), 0)
         # pyxel.text(0,16, str(self.window[0].floor[0].jem.data.place),0)
 
-    def windowChange(self):
+    def windowMove(self, data):
+        if self.windowChange == 0:
+            if data.y == -16:
+                self.windowChange = self.changeSpeed
+            if data.y > windowSizeY - 16:
+                data.y = windowSizeY - 16
+                self.windowChange = -1 * self.changeSpeed
+        elif self.windowChange == self.changeSpeed:
+            if data.y >= 16 * 3 * floorNum - 16:
+                data.y = 16 * 3 * floorNum - 16
+                self.currentWindow += 1
+                self.windowChange = 0
+        elif self.windowChange == -1 * self.changeSpeed:
+            if data.y <= -16:
+                data.tempY = -16
+                data.y = 0
+                self.currentWindow -= 1
+                self.windowChange = 0
+
+
+
 
     class Player:
 
@@ -45,18 +76,20 @@ class App:
             self.data = self.Database()
 
         def update(self, y, window, behindWindow):
-            self.y = y
-            self.data.currentFloor = int((self.data.y + 16) / 16 / 3)
-            self.moveRL(self.data)
-            self.moveUD(self.data)
-            if self.data.currentFloor == floorNum - 1:
-                if not behindWindow:
-                    self.ladder(window.floor[self.data.currentFloor].ladder, 0)
+            self.data.y += y
+            if y == 0:
+                self.data.currentFloor = int((self.data.y) / 16 / 3)
+                self.moveRL(self.data)
+                self.moveUD(self.data)
+                if self.data.currentFloor == floorNum - 1:
+                    if not behindWindow:
+                        self.ladder(window.floor[self.data.currentFloor].ladder, 0)
+                    else:
+                        self.ladder(window.floor[self.data.currentFloor].ladder, behindWindow.floor[0].ladder)
                 else:
-                    self.ladder(window.floor[self.data.currentFloor].ladder, behindWindow.floor[0].ladder)
-            else:
-                self.ladder(window.floor[self.data.currentFloor].ladder, window.floor[self.data.currentFloor + 1].ladder)
-            self.actionMove(self.data)
+                    self.ladder(window.floor[self.data.currentFloor].ladder, window.floor[self.data.currentFloor + 1].ladder)
+                self.actionMove(self.data)
+
 
         def draw(self):
             # pyxel.text(0,  0, str(self.data.direction), 0)
@@ -84,12 +117,13 @@ class App:
                 self.life = 16
                 self.x = windowSizeX / 2 - 8
                 self.y = floorNum * 16 * 3 - 32
+                self.y =   16
                 self.direction = 0
                 self.ladderUP = False
                 self.ladderDOWN = False
                 self.speed = 2
                 self.up = 0
-                self.currentFloor = int((self.y + 16) / 16 / 3)
+                self.currentFloor = int((self.y) / 16 / 3)
                 self.tempY = 0
                 self.action = False
 
@@ -160,6 +194,8 @@ class App:
                 else:
                     data.action = 0
 
+        def actionBump(self, data, damege):
+            5
 
 
     class Window:
@@ -172,7 +208,8 @@ class App:
                 self.floor.append(self.Floor(self.y, windowNum, self.ladderSame, i, self.randomFloor))
                 self.ladderSame = self.floor[i].ladder
 
-        def update(self):
+        def update(self, y):
+            self.y += y
             for i in range(floorNum):
                 self.floor[i].update(self.y)
 
