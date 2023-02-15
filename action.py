@@ -157,7 +157,7 @@ class App:
                 pyxel.text(48, 132, "Press DOWNkey or DOWNButton", 0)
                 pyxel.text(48, 138, "to climb down the ladder", 0)
             if self.tutorialMode >= 5:
-                pyxel.text(48, 12, "If you hit a ghost", 0)
+                pyxel.text(48, 120, "If you hit a ghost", 0)
                 pyxel.text(48, 126, "you will lose 1 life. Take care!", 0)
                 pyxel.text(48, 132, "press SPACEkey or PINKButton", 0)
                 pyxel.text(48, 138, "to return to title", 0)
