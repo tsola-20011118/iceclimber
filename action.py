@@ -38,7 +38,7 @@ class App:
             else:
                 self.player.update(self.windowChange, self.window[self.currentWindow],  self.window[self.currentWindow - 1])
             self.windowMove(self.player.data)
-            if self.player.data.life == 0:
+            if self.player.data.life <= 0:
                 self.gameMode = 2
         if self.gameMode == 2:
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeX - 32 - 8 - 32 + 4 <= pyxel.mouse_x <= windowSizeX - 32 - 8 - 32 + 4 + 32) and (106 + 16 * 5 + 8 <= pyxel.mouse_y <= 106 + 16 * 5 + 8 + 16):
@@ -203,7 +203,7 @@ class App:
         class Database:
             def __init__(self):
                 self.place = pyxel.rndi(0, 13)
-                self.life = 14
+                self.life = 100
                 self.x = windowSizeX / 2 - 8
                 self.y = floorNum * 16 * 3 - 32
                 self.direction = 0
@@ -367,11 +367,10 @@ class App:
                 self.jem = self.Static(self.y, self.same)
                 self.same.append(self.jem.data.place)
                 self.item =[]
+                self.moveEnemy = []
                 if self.windowNum > 5 and self.floorNum == self.randomFloor:
                     self.item.append(self.Static(self.y, self.same))
-                    self.same.append(self.item.data.place)
-                    self.moveEnemy.append(self.Dynamic(self.y, self.same))
-                self.moveEnemy = []
+                    self.same.append(self.item[0].data.place)
                 self.moveEnemy.append(self.Dynamic(self.y, self.same))
                 if self.windowNum > 2:
                     self.moveEnemy.append(self.Dynamic(self.y, self.same))
@@ -394,8 +393,6 @@ class App:
                 self.jem.draw(16, floorNum)
                 for item in self.item:
                     item.draw(19, floorNum)
-                # if self.windowNum > 4 and self.floorNum == self.randomFloor:
-                #     self.item.draw(19, floorNum)
                 for enemy in self.moveEnemy:
                     if enemy.data.direction == -1:
                         enemy.draw(22, floorNum)
