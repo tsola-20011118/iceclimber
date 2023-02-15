@@ -20,6 +20,8 @@ class App:
         self.windowChange = 0
         self.gameMode = 0
         self.gameStarttime = 0
+        self.tutorialMode = 0
+        self.tutorialAction = 0
         pyxel.run(self.update, self.draw);
 
     def update(self):
@@ -29,6 +31,47 @@ class App:
         if self.gameMode == 0:
             if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (40 - 4 + 8 <= pyxel.mouse_x <= 40 - 4 + 8 + 16 * 7) and (106 + 16 * 5 <= pyxel.mouse_y <= 106 + 16 * 5 + 16)):
                 self.gameMode = 1
+            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (40 - 4 + 8 <= pyxel.mouse_x <= 40 - 4 + 8 + 16 * 9) and (106 + 16 * 7 <= pyxel.mouse_y <= 106 + 16 *7 + 16)):
+                self.gameMode = -1
+        if self.gameMode == -1:
+            if self.tutorialMode == 0 and( ((pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (0 <= pyxel.mouse_x <= 16 * 4.5) and (windowSizeY + 10 <= pyxel.mouse_y <= windowSizeY + 90) and 26 * pyxel.mouse_x <= (pyxel.mouse_y - windowSizeY - 10) * 16 * 4.5 and pyxel.mouse_x * (-26) / 16 / 4.5 + windowSizeY + 87 >= pyxel.mouse_y) or pyxel.btnp(pyxel.KEY_LEFT, 1, 1)) or ((pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (16 * 9.5 <= pyxel.mouse_x <= 16 * 14) and (windowSizeY + 10 <= pyxel.mouse_y <= windowSizeY + 90) and 26 * pyxel.mouse_x >= (pyxel.mouse_y - windowSizeY - 10) * 16 * 4.5 and pyxel.mouse_x * (-26) / 16 / 4.5 + windowSizeY + 89 <= pyxel.mouse_y) or pyxel.btnp(pyxel.KEY_RIGHT, 1, 1))):
+                self.tutorialMode = 1
+            if self.tutorialMode == 1 and ((pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeY + 33 <= pyxel.mouse_y <= windowSizeY + 67) and (16 * 4.5 <= pyxel.mouse_x <= 16 * 9.5)) or pyxel.btnp(pyxel.KEY_SPACE, 1, 1)):
+                self.tutorialMode = 2
+            if self.tutorialMode == 2:
+                if 32 - 16 + 6 < self.player.data.x and self.player.data.x < 32 +16 + 6 and self.player.data.action != 0:
+                    self.tutorialAction += 1
+                if 32 < self.player.data.x and self.player.data.x < 32 + 16:
+                    self.tutorialAction = 60
+                if self.tutorialAction == 60:
+                    self.tutorialAction = 0
+                    self.tutorialMode = 3
+            if self.tutorialMode == 3:
+                if self.player.data.x < 16 * 8 and self.player.data.x + self.player.data.speed + 12 > 16 * 8:
+                    self.player.data.canMove[1] = False
+                else:
+                    self.player.data.canMove[1] = True
+                if self.player.data.x > 16 * 8 and self.player.data.x - self.player.data.speed < 16 * 8 + 16:
+                    self.player.data.canMove[0] = False
+                else:
+                    self.player.data.canMove[0] = True
+                if (16 * 8 - 12 == self.player.data.x or self.player.data.x == 16 * 8 + 16) and self.player.data.action != 0:
+                    self.tutorialAction += 1
+                if self.tutorialAction == 60:
+                    self.tutorialAction = 0
+                    self.tutorialMode = 4
+                    self.player.data.canMove = [True, True]
+            if self.tutorialMode == 4:
+                if ((pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeY <= pyxel.mouse_y <= windowSizeY + 30) and 26 * pyxel.mouse_x >= (pyxel.mouse_y - windowSizeY - 10) * 16 * 4.5 and pyxel.mouse_x * (-26) / 16 / 4.5 + windowSizeY + 89 >= pyxel.mouse_y) or (pyxel.btnp(pyxel.KEY_UP, 1, 1)) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeY + 67 <= pyxel.mouse_y <= windowSizeY + 100) and 26 * pyxel.mouse_x <= (pyxel.mouse_y - windowSizeY - 10) * 16 * 4.5 and pyxel.mouse_x * (-26) / 16 / 4.5 + windowSizeY + 89 <= pyxel.mouse_y) or pyxel.btnp(pyxel.KEY_DOWN, 1, 1)):
+                    self.tutorialMode = 5
+            if self.tutorialMode >= 5:
+                if self.player.data.y == windowSizeY - 16 * 4:
+                    self.tutorialMode = 6
+                if self.tutorialMode == 6 and ((pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeY + 33 <= pyxel.mouse_y <= windowSizeY + 67) and (16 * 4.5 <= pyxel.mouse_x <= 16 * 9.5)) or pyxel.btnp(pyxel.KEY_SPACE, 1, 1)):
+                    self.tutorialMode = 0
+                    self.gameMode = 0
+                    self.player = self.Player(0)
+            self.player.tutorial(self.tutorialMode, self.window[self.currentWindow])
         if self.gameMode == 1:
             if self.windowNum < self.currentWindow + 1:
                 self.window.append(self.Window(-1 * windowSizeY, self.currentWindow + 1))
@@ -81,6 +124,43 @@ class App:
             ImageBank(40 - 4, blty, 105)
             self.gameStarttime += 1
             pyxel.rect(pyxel.mouse_x - 1, pyxel.mouse_y - 1, 2, 2, 8)
+        if self.gameMode == -1:
+            pyxel.rect(32, 106, windowSizeX - 64, 50, 7)
+            if self.tutorialMode == 0:
+                pyxel.text(48, 120, "Press Leftkey or LeftButton ", 0)
+                pyxel.text(48, 126, "to go LEFT", 0)
+                pyxel.text(48, 138, "Press Rightkey or RightButton", 0)
+                pyxel.text(48, 144, "to go RIGHT", 0)
+            if self.tutorialMode == 1:
+                pyxel.text(48, 120, "Press SPACEkey or PINKButton ", 0)
+                pyxel.text(48, 126, "to attack an enemy motion", 0)
+            if self.tutorialMode == 2:
+                pyxel.text(48, 120, "If you get hit by fire,", 0)
+                pyxel.text(48, 126, "you lose 2 lives.", 0)
+                pyxel.text(48, 132, "You can restore 1 life by attacking ", 0)
+                pyxel.text(48, 138, "with A and extinguishing the fire.", 0)
+                if self.tutorialAction < 30:
+                    ImageBank(32, windowSizeY - 32, 13)
+                else:
+                    ImageBank(32, windowSizeY - 32, 14)
+            if self.tutorialMode == 3:
+                pyxel.text(48, 120, "Gems cannot be passed through.", 0)
+                pyxel.text(48, 126, "You can get gems ", 0)
+                pyxel.text(48, 132, "by doing action motion nearby.", 0)
+                if self.tutorialAction < 30:
+                    ImageBank(16 * 8, windowSizeY - 32, 16)
+                else:
+                    ImageBank(16 * 8, windowSizeY - 32, 17)
+            if self.tutorialMode == 4:
+                pyxel.text(48, 120, "Press UPkey or UPButton", 0)
+                pyxel.text(48, 126, "to climb the ladder", 0)
+                pyxel.text(48, 132, "Press DOWNkey or DOWNButton", 0)
+                pyxel.text(48, 138, "to climb down the ladder", 0)
+            if self.tutorialMode >= 5:
+                pyxel.text(48, 12, "If you hit a ghost", 0)
+                pyxel.text(48, 126, "you will lose 1 life. Take care!", 0)
+                pyxel.text(48, 132, "press SPACEkey or PINKButton", 0)
+                pyxel.text(48, 138, "to return to title", 0)
         if self.gameMode == 1:
             self.Number(windowSizeX, windowSizeY)
             ImageBank(0, 0, (1000 + self.player.data.life))
@@ -105,7 +185,6 @@ class App:
             self.gameStarttime += 1
             pyxel.rect(pyxel.mouse_x - 1, pyxel.mouse_y - 1, 2, 2, 8)
         ImageBank(0, 0, 100)
-        pyxel.rect(pyxel.mouse_x - 1, pyxel.mouse_y - 1, 2, 2, 8)
 
     def windowMove(self, data):
         if self.windowChange == 0:
@@ -134,11 +213,7 @@ class App:
             ImageBank(x - 16 * (int(digit) - int(i)), y - 16, int(score[i]))
             i += 1
 
-
-
-
     class Player:
-
         def __init__(self, y):
             self.y = y
             self.data = self.Database()
@@ -181,6 +256,16 @@ class App:
                     self.time += 1
                     if self.time >= 1200:
                         self.data.canBaster = False
+
+        def tutorial(self, num, window):
+            if num != 6:
+                if num >= 0:
+                    self.moveRL(self.data)
+                if num >= 1:
+                    self.actionMove(self.data)
+                if num >= 4:
+                    self.ladder(window.floor[self.data.currentFloor].ladder, 0)
+                    self.moveUD(self.data)
 
         def draw(self):
             if self.data.direction == 0:
