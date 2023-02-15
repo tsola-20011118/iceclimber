@@ -14,7 +14,7 @@ class App:
         self.player = self.Player(0)
         self.currentWindow = 0
         self.window = []
-        self.window.append(self.Window(0, 10))
+        self.window.append(self.Window(0, 0))
         self.windowNum = 0
         self.changeSpeed = 8
         self.windowChange = 0
