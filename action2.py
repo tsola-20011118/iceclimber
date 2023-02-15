@@ -328,6 +328,7 @@ class App:
                     if player.canBaster == True and damege == 1:
                         sum.life = 20
                         sum.aliveFlag = False
+                        pyxel.play(0, 5, loop=False)
                     else:
                         player.life -= damege
                         pyxel.play(0, 4, loop=False)
