@@ -22,12 +22,12 @@ class App:
         self.gameStarttime = 0
         self.tutorialMode = 0
         self.tutorialAction = 0
+        self.tutorialGostX = 16
+        self.tutorialGostAlive = False
+        self.pause = 0
         pyxel.run(self.update, self.draw);
 
     def update(self):
-        if self.windowChange == self.changeSpeed: self.window[self.currentWindow + 1].update(self.windowChange)
-        self.window[self.currentWindow].update(self.windowChange)
-        if self.currentWindow != 0: self.window[self.currentWindow - 1].update(self.windowChange)
         if self.gameMode == 0:
             if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (40 - 4 + 8 <= pyxel.mouse_x <= 40 - 4 + 8 + 16 * 7) and (106 + 16 * 5 <= pyxel.mouse_y <= 106 + 16 * 5 + 16)):
                 self.gameMode = 1
@@ -62,12 +62,29 @@ class App:
                     self.tutorialMode = 4
                     self.player.data.canMove = [True, True]
             if self.tutorialMode == 4:
-                if ((pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeY <= pyxel.mouse_y <= windowSizeY + 30) and 26 * pyxel.mouse_x >= (pyxel.mouse_y - windowSizeY - 10) * 16 * 4.5 and pyxel.mouse_x * (-26) / 16 / 4.5 + windowSizeY + 89 >= pyxel.mouse_y) or (pyxel.btnp(pyxel.KEY_UP, 1, 1)) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeY + 67 <= pyxel.mouse_y <= windowSizeY + 100) and 26 * pyxel.mouse_x <= (pyxel.mouse_y - windowSizeY - 10) * 16 * 4.5 and pyxel.mouse_x * (-26) / 16 / 4.5 + windowSizeY + 89 <= pyxel.mouse_y) or pyxel.btnp(pyxel.KEY_DOWN, 1, 1)):
+                if 16 * 3 - 16 + 6 < self.player.data.x and self.player.data.x < 16 * 3 + 16 + 6 and self.player.data.action != 0:
+                    self.tutorialAction += 3
+                if self.tutorialAction == 60:
+                    self.tutorialAction = 0
                     self.tutorialMode = 5
-            if self.tutorialMode >= 5:
-                if self.player.data.y == windowSizeY - 16 * 4:
+            if self.tutorialMode == 5:
+                self.tutorialGostX += 1
+                if self.tutorialGostX >= windowSizeX:
+                    self.tutorialGostX = 0
+                if self.tutorialGostAlive == False and self.tutorialGostX  < self.player.data.x  < self.tutorialGostX + 16 :
+                    self.tutorialGostAlive = True
+                if self.tutorialGostAlive == True:
+                    self.tutorialAction += 2
+                if self.tutorialAction > 60:
+                    self.tutorialAction = 0
                     self.tutorialMode = 6
-                if self.tutorialMode == 6 and ((pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeY + 33 <= pyxel.mouse_y <= windowSizeY + 67) and (16 * 4.5 <= pyxel.mouse_x <= 16 * 9.5)) or pyxel.btnp(pyxel.KEY_SPACE, 1, 1)):
+            if self.tutorialMode == 6:
+                if ((pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeY <= pyxel.mouse_y <= windowSizeY + 30) and 26 * pyxel.mouse_x >= (pyxel.mouse_y - windowSizeY - 10) * 16 * 4.5 and pyxel.mouse_x * (-26) / 16 / 4.5 + windowSizeY + 89 >= pyxel.mouse_y) or (pyxel.btnp(pyxel.KEY_UP, 1, 1)) or (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeY + 67 <= pyxel.mouse_y <= windowSizeY + 100) and 26 * pyxel.mouse_x <= (pyxel.mouse_y - windowSizeY - 10) * 16 * 4.5 and pyxel.mouse_x * (-26) / 16 / 4.5 + windowSizeY + 89 <= pyxel.mouse_y) or pyxel.btnp(pyxel.KEY_DOWN, 1, 1)):
+                    self.tutorialMode = 7
+            if self.tutorialMode >= 7:
+                if self.player.data.y == windowSizeY - 16 * 4:
+                    self.tutorialMode = 8
+                if self.tutorialMode == 8 and ((pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeY + 33 <= pyxel.mouse_y <= windowSizeY + 67) and (16 * 4.5 <= pyxel.mouse_x <= 16 * 9.5)) or pyxel.btnp(pyxel.KEY_SPACE, 1, 1)):
                     self.tutorialMode = 0
                     self.gameMode = 0
                     self.player = self.Player(0)
@@ -81,8 +98,13 @@ class App:
             else:
                 self.player.update(self.windowChange, self.window[self.currentWindow],  self.window[self.currentWindow - 1])
             self.windowMove(self.player.data)
+            if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeX - 16<= pyxel.mouse_x <= windowSizeX) and (0<= pyxel.mouse_y <= 16):
+                self.gameMode = -10
+                self.pause = 0
+                self.gameStarttime = 0
             if self.player.data.life <= 0:
                 self.gameMode = 2
+                self.gameStarttime = 0
         if self.gameMode == 2:
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeX - 32 - 8 - 32 + 4 <= pyxel.mouse_x <= windowSizeX - 32 - 8 - 32 + 4 + 32) and (106 + 16 * 5 + 8 <= pyxel.mouse_y <= 106 + 16 * 5 + 8 + 16):
                 template_link = "https://twitter.com/intent/tweet?text=PyxelGame%22iceClimber%22%E3%81%A7%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%81%9F%E3%82%88%EF%BC%81%0A%E7%A7%81%E3%81%AEscore%E3%81%AF{}%E7%82%B9%E3%81%A7%E3%81%97%E3%81%9F%EF%BC%81%0A%E4%B8%80%E7%B7%92%E3%81%AB%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%82%8B%E2%87%A9%0Ahttps%3A%2F%2Ftsola-20011118.github.io%2Ficecrimer%2F"
@@ -96,7 +118,32 @@ class App:
                 self.changeSpeed = 8
                 self.windowChange = 0
                 self.gameMode = 1
-                self.gameStarttime = 0
+        if self.gameMode == -10:
+            self.pause += 1
+            if self.pause >= 10 and pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeX - 16 <= pyxel.mouse_x <= windowSizeX) and (0 <= pyxel.mouse_y <= 16):
+                self.gameMode = 1
+            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (40 - 4 + 8 <= pyxel.mouse_x <= 40 - 4 + 8 + 16 * 7) and (106 + 16 * 5 <= pyxel.mouse_y <= 106 + 16 * 5 + 16)):
+                self.player = self.Player(0)
+                self.window = []
+                self.window.append(self.Window(0, 0))
+                self.currentWindow = 0
+                self.windowNum = 0
+                self.changeSpeed = 8
+                self.windowChange = 0
+                self.gameMode = 0
+            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (40 - 4 + 8 <= pyxel.mouse_x <= 40 - 4 + 8 + 16 * 9) and (106 + 16 * 7 <= pyxel.mouse_y <= 106 + 16 * 7 + 16)):
+                self.player = self.Player(0)
+                self.window = []
+                self.window.append(self.Window(0, 0))
+                self.currentWindow = 0
+                self.windowNum = 0
+                self.changeSpeed = 8
+                self.windowChange = 0
+                self.gameMode = 1
+        else:
+            if self.windowChange == self.changeSpeed: self.window[self.currentWindow + 1].update(self.windowChange)
+            self.window[self.currentWindow].update(self.windowChange)
+            if self.currentWindow != 0: self.window[self.currentWindow - 1].update(self.windowChange)
 
     def draw(self):
         pyxel.cls(1);
@@ -152,11 +199,27 @@ class App:
                 else:
                     ImageBank(16 * 8, windowSizeY - 32, 17)
             if self.tutorialMode == 4:
+                pyxel.text(48, 120, "If you acquire a vacuum cleaner, ", 0)
+                pyxel.text(48, 126, "you will be able to defeat ghosts ", 0)
+                pyxel.text(48, 132, "for a certain period of time.", 0)
+                if self.tutorialAction < 60:
+                    ImageBank(16 * 3, windowSizeY - 32, 19)
+            if self.tutorialMode == 5:
+                pyxel.text(48, 120, "If you acquire a vacuum cleaner, ", 0)
+                pyxel.text(48, 126, "you will be able to defeat ghosts ", 0)
+                pyxel.text(48, 132, "for a certain period of time.", 0)
+                if self.tutorialAction < 20:
+                    ImageBank(self.tutorialGostX, windowSizeY - 40, 25)
+                elif self.tutorialAction < 40:
+                    ImageBank(self.tutorialGostX, windowSizeY - 40, 26)
+                elif self.tutorialAction <= 60:
+                    ImageBank(self.tutorialGostX, windowSizeY - 40, 27)
+            if self.tutorialMode == 6:
                 pyxel.text(48, 120, "Press UPkey or UPButton", 0)
                 pyxel.text(48, 126, "to climb the ladder", 0)
                 pyxel.text(48, 132, "Press DOWNkey or DOWNButton", 0)
                 pyxel.text(48, 138, "to climb down the ladder", 0)
-            if self.tutorialMode >= 5:
+            if self.tutorialMode >= 7:
                 pyxel.text(48, 120, "If you hit a ghost", 0)
                 pyxel.text(48, 126, "you will lose 1 life. Take care!", 0)
                 pyxel.text(48, 132, "press SPACEkey or PINKButton", 0)
@@ -164,6 +227,7 @@ class App:
         if self.gameMode == 1:
             self.Number(windowSizeX, windowSizeY)
             ImageBank(0, 0, (1000 + self.player.data.life))
+            ImageBank(16 * 13, 0, 112)
         if self.gameMode == 2:
             blty = self.gameStarttime * 10
             if blty > 106:
@@ -184,7 +248,28 @@ class App:
             ImageBank(40 - 4, blty, 106)
             self.gameStarttime += 1
             pyxel.rect(pyxel.mouse_x - 1, pyxel.mouse_y - 1, 2, 2, 8)
+        if self.gameMode == -10:
+            ImageBank(16 * 13, 0, 111)
+            blty = self.gameStarttime * 10
+            if blty > 106:
+                if blty > 106 + 16 * (4 + 2 + 2 + 1):
+                    blty = 106 + 16 * (4 + 2 + 2 + 1)
+                pyxel.rect(32, 106, windowSizeX - 64, blty - 106, 7)
+                if blty > 106 + 16 * 4:
+                    if blty > 106 + 16 * 4 + 16:
+                        blty = 106 + 16 * 4 + 16
+                    ImageBank(40 - 4 + 8, blty, 113)
+                    ImageBank(40 - 4 + 8, blty + 16 * 2, 109)
+                    if (40 - 4 + 8 <= pyxel.mouse_x <= 40 + 8 + 16 * 5) and (blty <= pyxel.mouse_y <= blty + 16):
+                        ImageBank(40 - 4 + 8, blty, 114)
+                    if (40 - 4 + 8 <= pyxel.mouse_x <= 40 + 8 + 16 * 9) and (blty + 32 <= pyxel.mouse_y <= blty + 48):
+                        ImageBank(40 - 4 + 8, blty + 16 * 2, 110)
+                if blty > 110:
+                    blty = 110
+            ImageBank(40 - 4, blty, 105)
+            self.gameStarttime += 1
         ImageBank(0, 0, 100)
+        pyxel.rect(pyxel.mouse_x - 1, pyxel.mouse_y - 1, 2, 2, 8)
 
     def windowMove(self, data):
         if self.windowChange == 0:
@@ -258,12 +343,12 @@ class App:
                         self.data.canBaster = False
 
         def tutorial(self, num, window):
-            if num != 6:
+            if num != 8:
                 if num >= 0:
                     self.moveRL(self.data)
                 if num >= 1:
                     self.actionMove(self.data)
-                if num >= 4:
+                if num >= 6:
                     self.ladder(window.floor[self.data.currentFloor].ladder, 0)
                     self.moveUD(self.data)
 
@@ -290,7 +375,7 @@ class App:
         class Database:
             def __init__(self):
                 self.place = pyxel.rndi(0, 13)
-                self.life = 16
+                self.life = 13
                 self.x = windowSizeX / 2 - 8
                 self.y = floorNum * 16 * 3 - 32
                 self.direction = 0
@@ -388,7 +473,8 @@ class App:
                     sum.life -= damege
                 if sum.life < 0:
                     player.score += score
-                    player.life += life
+                    if player.life != 27:
+                        player.life += life
                     pyxel.play(0, 3, loop=False)
                     sum.aliveFlag = False
                     if damege == 30:
@@ -408,7 +494,7 @@ class App:
 
         def enemyBump(self, player, sum, damege):
             if sum.aliveFlag == True and (player.y / 16) % 3 == 1:
-                if player.x > sum.x - 8 and player.x < sum.x + 12:
+                if sum.x - 8 < player.x < sum.x + 12 or (player.x < 0 and sum.x - 8 < (player.x + windowSizeX) < sum.x + 12) or (player.x > windowSizeX and sum.x - 8 < (player.x - windowSizeX) < sum.x + 12):
                     if player.canBaster == True and damege == 1:
                         sum.life = 20
                         sum.aliveFlag = False
@@ -659,10 +745,28 @@ def ImageBank(x, y, num):
         pyxel.blt(x, y, 0, 0, 16,  16 * 7 , 16, 3)
     if num == 110:
         pyxel.blt(x, y, 0, 0, 32,  16 * 7, 16, 3)
-    if num > 1000:
+    if num == 111:
+        pyxel.blt(x, y, 0, 16 * 11, 0,  16, 16, 3)
+    if num == 112:
+        pyxel.blt(x, y, 0, 16 * 12, 0,  16, 16, 3)
+    if num == 113:
+        pyxel.blt(x, y, 0, 0, 16,  16, 16, 3)
+        pyxel.blt(x + 16, y, 0, 16 * 7, 16,  16, 16, 3)
+        pyxel.blt(x + 16 * 2, y, 0, 16 * 10, 16,  16, 16, 3)
+        pyxel.blt(x + 16 * 3, y, 0, 16 * 3, 16,  16, 16, 3)
+    if num == 114:
+        pyxel.blt(x, y, 0, 0, 32,  16, 16, 3)
+        pyxel.blt(x + 16, y, 0, 16 * 7, 32,  16, 16, 3)
+        pyxel.blt(x + 16 * 2, y, 0, 16 * 10, 32,  16, 16, 3)
+        pyxel.blt(x + 16 * 3, y, 0, 16 * 3, 32,  16, 16, 3)
+    if num >= 1000:
         temp = num - 1000
         for i in range(temp):
-            pyxel.blt(x + i * 16, y, 0, 16 * 10,0,  16, 16, 0)
+            if i > 12:
+                pyxel.blt(x + (i - 13) * 16, y + 16, 0, 16 * 10, 0,  16, 16, 0)
+            else:
+                pyxel.blt(x + i * 16, y, 0, 16 * 10, 0,  16, 16, 0)
+
 
 def moveOut(x, y, ix, iy, iw ,ih,width):
     if -2 * width <= x and x <= 0:
@@ -672,3 +776,5 @@ def moveOut(x, y, ix, iy, iw ,ih,width):
 
 
 App()
+
+
