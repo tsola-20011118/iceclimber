@@ -11,6 +11,11 @@ class App:
         pyxel.init(windowSizeX, windowSizeY + 100, fps=30)
         pyxel.load("action.pyxres")
         pyxel.play(1,10, loop=True)
+        self.Restart()
+        self.gameMode = 0
+        pyxel.run(self.update, self.draw);
+
+    def Restart(self):
         self.player = self.Player(0)
         self.currentWindow = 0
         self.window = []
@@ -18,14 +23,12 @@ class App:
         self.windowNum = 0
         self.changeSpeed = 8
         self.windowChange = 0
-        self.gameMode = 0
         self.gameStarttime = 0
         self.tutorialMode = 0
         self.tutorialAction = 0
         self.tutorialGostX = 16
         self.tutorialGostAlive = False
         self.pause = 0
-        pyxel.run(self.update, self.draw);
 
     def update(self):
         if self.gameMode == 0:
@@ -85,9 +88,8 @@ class App:
                 if self.player.data.y == windowSizeY - 16 * 4:
                     self.tutorialMode = 8
                 if self.tutorialMode == 8 and ((pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeY + 33 <= pyxel.mouse_y <= windowSizeY + 67) and (16 * 4.5 <= pyxel.mouse_x <= 16 * 9.5)) or pyxel.btnp(pyxel.KEY_SPACE, 1, 1)):
-                    self.tutorialMode = 0
+                    self.Restart()
                     self.gameMode = 0
-                    self.player = self.Player(0)
             self.player.tutorial(self.tutorialMode, self.window[self.currentWindow])
         if self.gameMode == 1:
             if self.windowNum < self.currentWindow + 1:
@@ -110,35 +112,17 @@ class App:
                 template_link = "https://twitter.com/intent/tweet?text=PyxelGame%22iceClimber%22%E3%81%A7%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%81%9F%E3%82%88%EF%BC%81%0A%E7%A7%81%E3%81%AEscore%E3%81%AF{}%E7%82%B9%E3%81%A7%E3%81%97%E3%81%9F%EF%BC%81%0A%E4%B8%80%E7%B7%92%E3%81%AB%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%82%8B%E2%87%A9%0Ahttps%3A%2F%2Ftsola-20011118.github.io%2Ficecrimer%2F"
                 webbrowser.open(template_link.format(self.player.data.score))
             if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (40 - 4 + 8 <= pyxel.mouse_x <= 40 - 4 + 8 + 16 * 9) and (106 + 16 * 7 <= pyxel.mouse_y <= 106 + 16 * 7 + 16)):
-                self.player = self.Player(0)
-                self.window = []
-                self.window.append(self.Window(0, 0))
-                self.currentWindow = 0
-                self.windowNum = 0
-                self.changeSpeed = 8
-                self.windowChange = 0
+                self.Restart()
                 self.gameMode = 1
         if self.gameMode == -10:
             self.pause += 1
             if self.pause >= 10 and pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeX - 16 <= pyxel.mouse_x <= windowSizeX) and (0 <= pyxel.mouse_y <= 16):
                 self.gameMode = 1
             if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (40 - 4 + 8 <= pyxel.mouse_x <= 40 - 4 + 8 + 16 * 7) and (106 + 16 * 5 <= pyxel.mouse_y <= 106 + 16 * 5 + 16)):
-                self.player = self.Player(0)
-                self.window = []
-                self.window.append(self.Window(0, 0))
-                self.currentWindow = 0
-                self.windowNum = 0
-                self.changeSpeed = 8
-                self.windowChange = 0
+                self.Restart()
                 self.gameMode = 0
             if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (40 - 4 + 8 <= pyxel.mouse_x <= 40 - 4 + 8 + 16 * 9) and (106 + 16 * 7 <= pyxel.mouse_y <= 106 + 16 * 7 + 16)):
-                self.player = self.Player(0)
-                self.window = []
-                self.window.append(self.Window(0, 0))
-                self.currentWindow = 0
-                self.windowNum = 0
-                self.changeSpeed = 8
-                self.windowChange = 0
+                self.Restart()
                 self.gameMode = 1
         else:
             if self.windowChange == self.changeSpeed: self.window[self.currentWindow + 1].update(self.windowChange)
