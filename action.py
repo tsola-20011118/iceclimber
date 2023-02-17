@@ -45,7 +45,10 @@ class App:
                 if 32 - 16 + 6 < self.player.data.x and self.player.data.x < 32 +16 + 6 and self.player.data.action != 0:
                     self.tutorialAction += 1
                 if 32 < self.player.data.x and self.player.data.x < 32 + 16:
+                    pyxel.play(0, 4, loop=False)
                     self.tutorialAction = 60
+                if self.tutorialAction == 55:
+                    pyxel.play(0, 3, loop=False)
                 if self.tutorialAction == 60:
                     self.tutorialAction = 0
                     self.tutorialMode = 3
@@ -60,6 +63,8 @@ class App:
                     self.player.data.canMove[0] = True
                 if (16 * 8 - 12 == self.player.data.x or self.player.data.x == 16 * 8 + 16) and self.player.data.action != 0:
                     self.tutorialAction += 1
+                if self.tutorialAction == 55:
+                    pyxel.play(0, 3, loop=False)
                 if self.tutorialAction == 60:
                     self.tutorialAction = 0
                     self.tutorialMode = 4
@@ -67,6 +72,8 @@ class App:
             if self.tutorialMode == 4:
                 if 16 * 3 - 16 + 6 < self.player.data.x and self.player.data.x < 16 * 3 + 16 + 6 and self.player.data.action != 0:
                     self.tutorialAction += 3
+                if self.tutorialAction ==45:
+                    pyxel.play(0, 3, loop=False)
                 if self.tutorialAction == 60:
                     self.tutorialAction = 0
                     self.tutorialMode = 5
@@ -76,9 +83,10 @@ class App:
                     self.tutorialGostX = 0
                 if self.tutorialGostAlive == False and self.tutorialGostX  < self.player.data.x  < self.tutorialGostX + 16 :
                     self.tutorialGostAlive = True
+                    pyxel.play(0, 5, loop=False)
                 if self.tutorialGostAlive == True:
                     self.tutorialAction += 2
-                if self.tutorialAction > 60:
+                if self.tutorialAction == 60:
                     self.tutorialAction = 0
                     self.tutorialMode = 6
             if self.tutorialMode == 6:
