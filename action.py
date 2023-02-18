@@ -486,7 +486,7 @@ class App:
                     sum.life -= damege
                 if sum.life < 0:
                     player.score += score
-                    if player.life != 27:
+                    if player.life != 13:
                         player.life += life
                     pyxel.play(0, 3, loop=False)
                     sum.aliveFlag = False
