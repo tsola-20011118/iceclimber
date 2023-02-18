@@ -32,9 +32,10 @@ class App:
 
     def update(self):
         if self.gameMode == 0:
-            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (40 - 4 + 8 <= pyxel.mouse_x <= 40 - 4 + 8 + 16 * 7) and (106 + 16 * 5 <= pyxel.mouse_y <= 106 + 16 * 5 + 16)):
+            self.pause += 1
+            if self.pause >= 10 and (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (40 - 4 + 8 <= pyxel.mouse_x <= 40 - 4 + 8 + 16 * 7) and (106 + 16 * 5 <= pyxel.mouse_y <= 106 + 16 * 5 + 16)):
                 self.gameMode = 1
-            if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (40 - 4 + 8 <= pyxel.mouse_x <= 40 - 4 + 8 + 16 * 9) and (106 + 16 * 7 <= pyxel.mouse_y <= 106 + 16 *7 + 16)):
+            if self.pause >= 10 and (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (40 - 4 + 8 <= pyxel.mouse_x <= 40 - 4 + 8 + 16 * 9) and (106 + 16 * 7 <= pyxel.mouse_y <= 106 + 16 *7 + 16)):
                 self.gameMode = -1
         if self.gameMode == -1:
             if self.tutorialMode == 0 and( ((pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (0 <= pyxel.mouse_x <= 16 * 4.5) and (windowSizeY + 10 <= pyxel.mouse_y <= windowSizeY + 90) and 26 * pyxel.mouse_x <= (pyxel.mouse_y - windowSizeY - 10) * 16 * 4.5 and pyxel.mouse_x * (-26) / 16 / 4.5 + windowSizeY + 87 >= pyxel.mouse_y) or pyxel.btnp(pyxel.KEY_LEFT, 1, 1)) or ((pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (16 * 9.5 <= pyxel.mouse_x <= 16 * 14) and (windowSizeY + 10 <= pyxel.mouse_y <= windowSizeY + 90) and 26 * pyxel.mouse_x >= (pyxel.mouse_y - windowSizeY - 10) * 16 * 4.5 and pyxel.mouse_x * (-26) / 16 / 4.5 + windowSizeY + 89 <= pyxel.mouse_y) or pyxel.btnp(pyxel.KEY_RIGHT, 1, 1))):
@@ -649,10 +650,10 @@ def ImageBank(x, y, num):
         pyxel.blt(x, y, 2, 16, 96, 16, 16, 0)
     # jem(初期)
     if num == 16:
-        pyxel.blt(x, y, 2, 0, 80, 16, 16, 0)
+        pyxel.blt(x, y, 2, 16, 80, 16, 16, 0)
     # jem（後期）
     if num == 17 or num == 18:
-        pyxel.blt(x, y, 2, 16, 80, 16, 16, 0)
+        pyxel.blt(x, y, 2, 0, 80, 16, 16, 0)
     # item
     if 19 <= num and num <= 21:
         pyxel.blt(x, y, 2, 0, 112, 16, 16, 3)
