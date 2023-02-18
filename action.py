@@ -163,7 +163,6 @@ class App:
                     blty = 110
             ImageBank(40 - 4, blty, 105)
             self.gameStarttime += 1
-            pyxel.rect(pyxel.mouse_x - 1, pyxel.mouse_y - 1, 2, 2, 8)
         if self.gameMode == -1:
             pyxel.rect(32, 106, windowSizeX - 64, 50, 7)
             if self.tutorialMode == 0:
@@ -262,7 +261,7 @@ class App:
             ImageBank(40 - 4, blty, 105)
             self.gameStarttime += 1
         ImageBank(0, 0, 100)
-        pyxel.rect(pyxel.mouse_x - 1, pyxel.mouse_y - 1, 2, 2, 8)
+        pyxel.text(pyxel.mouse_x - 1, pyxel.mouse_y - 1, "v1.8.1", 0)
 
     def windowMove(self, data):
         if self.windowChange == 0:
