@@ -19,7 +19,7 @@ class App:
         self.player = self.Player(0)
         self.currentWindow = 0
         self.window = []
-        self.window.append(self.Window(0, 0))
+        self.window.append(self.Window(0, 6))
         self.windowNum = 0
         self.changeSpeed = 8
         self.windowChange = 0
@@ -118,7 +118,7 @@ class App:
                 self.gameStarttime = 0
         if self.gameMode == 2:
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (windowSizeX - 32 - 8 - 32 + 4 <= pyxel.mouse_x <= windowSizeX - 32 - 8 - 32 + 4 + 32) and (106 + 16 * 5 + 8 <= pyxel.mouse_y <= 106 + 16 * 5 + 8 + 16):
-                template_link = "https://twitter.com/intent/tweet?text=PyxelGame%22iceClimber%22%E3%81%A7%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%81%9F%E3%82%88%EF%BC%81%0A%E7%A7%81%E3%81%AEscore%E3%81%AF{}%E7%82%B9%E3%81%A7%E3%81%97%E3%81%9F%EF%BC%81%0A%E4%B8%80%E7%B7%92%E3%81%AB%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%82%8B%E2%87%A9%0Ahttps%3A%2F%2Ftsola-20011118.github.io%2Ficecrimer%2F"
+                template_link = "https://twitter.com/intent/tweet?text=PyxelGame%22iceClimber%22%E3%81%A7%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%81%9F%E3%82%88%EF%BC%81%0A%E7%A7%81%E3%81%AEscore%E3%81%AF42%E7%82%B9%E3%81%A7%E3%81%97%E3%81%9F%EF%BC%81%0A%E4%B8%80%E7%B7%92%E3%81%AB%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%82%8B%E2%87%A9%0Ahttps%3A%2F%2Fkitao.github.io%2Fpyxel%2Fwasm%2Flauncher%2F%3Fplay%3Dtsola-20011118.iceclimber.iceclimber"
                 webbrowser.open(template_link.format(self.player.data.score))
             if (pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 1, 1) and (40 - 4 + 8 <= pyxel.mouse_x <= 40 - 4 + 8 + 16 * 9) and (106 + 16 * 7 <= pyxel.mouse_y <= 106 + 16 * 7 + 16)):
                 self.Restart()
@@ -332,7 +332,7 @@ class App:
                     self.ladder(window.floor[self.data.currentFloor].ladder, window.floor[self.data.currentFloor + 1].ladder)
                 if self.data.canBaster == True:
                     self.time += 1
-                    if self.time >= 1200:
+                    if self.time >= 300:
                         self.data.canBaster = False
 
         def tutorial(self, num, window):
@@ -346,24 +346,45 @@ class App:
                     self.moveUD(self.data)
 
         def draw(self):
-            if self.data.direction == 0:
-                ImageBank(self.data.x, self.y + self.data.y, 28)
-            elif self.data.up != 0:
-                ImageBank(self.data.x, self.y + self.data.y, 35)
-            elif self.data.direction == 1:
-                if self.data.action == 0:
-                    ImageBank(self.data.x, self.y + self.data.y, 29)
-                elif self.data.action % 6 < 3:
-                    ImageBank(self.data.x, self.y + self.data.y, 30)
-                else:
-                    ImageBank(self.data.x, self.y + self.data.y, 31)
-            elif self.data.direction == -1:
-                if self.data.action == 0:
-                    ImageBank(self.data.x, self.y + self.data.y, 32)
-                elif self.data.action % 6 < 3:
-                    ImageBank(self.data.x - 4, self.y + self.data.y, 33)
-                else:
-                    ImageBank(self.data.x - 4, self.y + self.data.y, 34)
+            if self.data.canBaster == False:
+                if self.data.direction == 0:
+                    ImageBank(self.data.x, self.y + self.data.y, 28)
+                elif self.data.up != 0:
+                    ImageBank(self.data.x, self.y + self.data.y, 35)
+                elif self.data.direction == 1:
+                    if self.data.action == 0:
+                        ImageBank(self.data.x, self.y + self.data.y, 29)
+                    elif self.data.action % 6 < 3:
+                        ImageBank(self.data.x, self.y + self.data.y, 30)
+                    else:
+                        ImageBank(self.data.x, self.y + self.data.y, 31)
+                elif self.data.direction == -1:
+                    if self.data.action == 0:
+                        ImageBank(self.data.x, self.y + self.data.y, 32)
+                    elif self.data.action % 6 < 3:
+                        ImageBank(self.data.x - 4, self.y + self.data.y, 33)
+                    else:
+                        ImageBank(self.data.x - 4, self.y + self.data.y, 34)
+            else:
+                if self.data.direction == 0:
+                    ImageBank(self.data.x, self.y + self.data.y, 36)
+                elif self.data.up != 0:
+                    ImageBank(self.data.x, self.y + self.data.y, 43)
+                elif self.data.direction == 1:
+                    if self.data.action == 0:
+                        ImageBank(self.data.x, self.y + self.data.y, 37)
+                    elif self.data.action % 6 < 3:
+                        ImageBank(self.data.x, self.y + self.data.y, 38)
+                    else:
+                        ImageBank(self.data.x, self.y + self.data.y, 39)
+                elif self.data.direction == -1:
+                    if self.data.action == 0:
+                        ImageBank(self.data.x, self.y + self.data.y, 40)
+                    elif self.data.action % 6 < 3:
+                        ImageBank(self.data.x - 4, self.y + self.data.y, 41)
+                    else:
+                        ImageBank(self.data.x - 4, self.y + self.data.y, 42)
+
 
         class Database:
             def __init__(self):
@@ -709,6 +730,34 @@ def ImageBank(x, y, num):
     if num == 35:
         moveOut(x, y, 32, 32, 16, 16, 12)
         pyxel.blt(x, y, 2, 32, 32, 16, 16, 0)
+    # player前向き
+    if num == 36:
+        moveOut2(x, y, 48, 32, 16, 16, 12)
+        pyxel.blt(x, y, 2, 48, 32, 16, 16, 3)
+    # player右向き
+    if num == 37:
+        moveOut2(x, y, 48, 0, 16, 16, 12)
+        pyxel.blt(x, y, 2, 48, 0, 16, 16, 3)
+    # 右向き action
+    if num == 38:
+        moveOut2(x, y, 64, 0, 16, 16, 12)
+        pyxel.blt(x, y, 2, 64, 0, 16, 16, 3)
+    if num == 39:
+        moveOut2(x, y, 80, 0, 16, 16, 12)
+        pyxel.blt(x, y, 2, 80, 0, 16, 16, 3)
+    # player左向き
+    if num == 40:
+        moveOut2(x, y, 48, 16, 16, 16, 12)
+        pyxel.blt(x, y, 2, 48, 16, 16, 16, 3)
+    if num == 41:
+        moveOut2(x, y, 64, 16, 16, 16, 12)
+        pyxel.blt(x, y, 2, 64, 16, 16, 16, 3)
+    if num == 42:
+        moveOut2(x, y, 80, 16, 16, 16, 12)
+        pyxel.blt(x, y, 2, 80, 16, 16, 16, 3)
+    if num == 43:
+        moveOut2(x, y, 80, 32, 16, 16, 12)
+        pyxel.blt(x, y, 2, 80, 32, 16, 16, 3)
     if num == 100:
         pyxel.blt(0, 16 * 3 * floorNum, 1, 0, 16 * 9, 16 * 14, 100,  0)
     #play
@@ -766,6 +815,13 @@ def moveOut(x, y, ix, iy, iw ,ih,width):
         pyxel.blt(windowSizeX + x, y, 2, ix, iy, iw, ih, 0)
     if windowSizeX - 2 * width <= x and x <= windowSizeX:
         pyxel.blt(x - windowSizeX, y, 2, ix, iy, iw, ih, 0)
+
+
+def moveOut2(x, y, ix, iy, iw, ih, width):
+    if -2 * width <= x and x <= 0:
+        pyxel.blt(windowSizeX + x, y, 2, ix, iy, iw, ih, 3)
+    if windowSizeX - 2 * width <= x and x <= windowSizeX:
+        pyxel.blt(x - windowSizeX, y, 2, ix, iy, iw, ih, 3)
 
 
 App()
